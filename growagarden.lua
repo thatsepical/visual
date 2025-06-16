@@ -8,18 +8,28 @@ local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
 
+-- Toggle Button to reopen UI
+local toggleButton = Instance.new("TextButton", screenGui)
+toggleButton.Size = UDim2.new(0, 100, 0, 35)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "Open UI"
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.TextSize = 18
+toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 8)
+
+-- Main UI Frame
 local mainFrame = Instance.new("Frame", screenGui)
 mainFrame.Size = UDim2.new(0, 300, 0, 340)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -170)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
-mainFrame.Draggable = false
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
 
--- Manual drag logic (Mobile & PC)
+-- Draggable logic
 local dragging, dragStart, startPos
-
 mainFrame.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
@@ -39,8 +49,13 @@ UIS.InputChanged:Connect(function(input)
 		mainFrame.Position = UDim2.new(
 			startPos.X.Scale, startPos.X.Offset + delta.X,
 			startPos.Y.Scale, startPos.Y.Offset + delta.Y
-	)
+		)
 	end
+end)
+
+-- Show UI when toggle is clicked
+toggleButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
 end)
 
 -- Header
@@ -133,7 +148,7 @@ end
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.55)
 local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.7)
 
--- SEED Tab (just for show now)
+-- SEED Tab content
 local seedLabel = Instance.new("TextLabel", seedTabFrame)
 seedLabel.Size = UDim2.new(1, 0, 0, 30)
 seedLabel.Position = UDim2.new(0, 0, 0.1, 0)
@@ -159,25 +174,25 @@ closeBtn.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 end)
 
--- Spawn Pet Logic (dummy)
+-- Spawn Pet Placeholder
 spawnBtn.MouseButton1Click:Connect(function()
 	print("Spawned:", petNameBox.Text, "Weight:", weightBox.Text, "Age:", ageBox.Text)
 end)
 
--- Dupe Logic
+-- Dupe Logic (works if holding a valid Tool)
 dupeBtn.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if not char then return end
-	local held = char:FindFirstChildOfClass("Tool")
-	if not held then warn("No tool held.") return end
+	local tool = char:FindFirstChildOfClass("Tool")
+	if not tool then warn("No tool equipped.") return end
 
 	local validPets = { "Bee", "Slime", "Chick", "Bat", "Pupper" }
 	for _, name in ipairs(validPets) do
-		if held.Name:lower():find(name:lower()) then
-			local clone = held:Clone()
+		if tool.Name:lower():find(name:lower()) then
+			local clone = tool:Clone()
 			clone.Parent = backpack
-			task.wait(0.1)
 			player.Character.Humanoid:EquipTool(clone)
+			print("Duplicated:", clone.Name)
 			return
 		end
 	end
