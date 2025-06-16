@@ -1,3 +1,5 @@
+-- FIXED Dragging + TextBox Label Issues
+
 local player = game.Players.LocalPlayer
 local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
@@ -13,39 +15,44 @@ frame.Position = UDim2.new(0.35, 0, 0.35, 0)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
 frame.Name = "MainFrame"
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
-local corner = Instance.new("UICorner", frame)
-corner.CornerRadius = UDim.new(0, 12)
-
--- Dragging fix
+-- Dragging variables
 local dragging, dragInput, dragStart, startPos
 
+local function startDrag(input)
+	dragging = true
+	dragStart = input.Position
+	startPos = frame.Position
+end
+
+local function updateDrag(input)
+	if dragging then
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end
+
+-- Enable dragging on entire frame (and children)
 frame.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
+		startDrag(input)
 	end
 end)
 
-frame.InputChanged:Connect(function(input)
+UIS.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement then
 		dragInput = input
 	end
 end)
 
-UIS.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+UIS.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
 	end
 end)
+
+UIS.InputChanged:Connect(updateDrag)
 
 -- PET and SEED tabs
 local tabPet = Instance.new("TextButton", frame)
@@ -57,16 +64,12 @@ tabPet.TextColor3 = Color3.new(1, 1, 1)
 tabPet.Font = Enum.Font.SourceSans
 tabPet.TextSize = 24
 
-local tabSeed = Instance.new("TextButton", frame)
+local tabSeed = tabPet:Clone()
 tabSeed.Text = "SEED"
-tabSeed.Size = UDim2.new(0.5, 0, 0, 30)
 tabSeed.Position = UDim2.new(0.5, 0, 0, 0)
-tabSeed.BackgroundTransparency = 1
-tabSeed.TextColor3 = Color3.new(1, 1, 1)
-tabSeed.Font = Enum.Font.SourceSans
-tabSeed.TextSize = 24
+tabSeed.Parent = frame
 
--- Close Button
+-- Close button
 local closeBtn = Instance.new("TextButton", frame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
 closeBtn.Position = UDim2.new(1, -35, 0, 5)
@@ -77,7 +80,6 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
--- Floating open button
 local floatBtn = Instance.new("TextButton", screenGui)
 floatBtn.Size = UDim2.new(0, 120, 0, 30)
 floatBtn.Position = UDim2.new(0, 10, 1, -50)
@@ -99,81 +101,75 @@ floatBtn.MouseButton1Click:Connect(function()
 	floatBtn.Visible = false
 end)
 
--- PET container
+-- Containers
 local petContainer = Instance.new("Frame", frame)
 petContainer.Size = UDim2.new(1, 0, 1, -40)
 petContainer.Position = UDim2.new(0, 0, 0, 35)
 petContainer.BackgroundTransparency = 1
 
--- Pet Name
-local nameBox = Instance.new("TextBox", petContainer)
-nameBox.Size = UDim2.new(0.9, 0, 0, 30)
-nameBox.Position = UDim2.new(0.05, 0, 0.02, 0)
-nameBox.PlaceholderText = "Pet Name"
-nameBox.BackgroundColor3 = Color3.fromRGB(140, 140, 140)
-nameBox.PlaceholderColor3 = Color3.new(1, 1, 1)
-nameBox.TextColor3 = Color3.new(1, 1, 1)
-nameBox.Font = Enum.Font.SourceSans
-nameBox.TextSize = 18
-Instance.new("UICorner", nameBox).CornerRadius = UDim.new(0, 6)
+local seedContainer = petContainer:Clone()
+seedContainer.Visible = false
+seedContainer.Parent = frame
 
--- Weight
-local weightBox = Instance.new("TextBox", petContainer)
+-- Pet Name Box
+local function makeTextBox(parent, placeholder, pos)
+	local box = Instance.new("TextBox", parent)
+	box.Size = UDim2.new(0.9, 0, 0, 30)
+	box.Position = pos
+	box.PlaceholderText = placeholder
+	box.Text = ""
+	box.BackgroundColor3 = Color3.fromRGB(140, 140, 140)
+	box.PlaceholderColor3 = Color3.new(1, 1, 1)
+	box.TextColor3 = Color3.new(1, 1, 1)
+	box.Font = Enum.Font.SourceSans
+	box.TextSize = 18
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+	return box
+end
+
+local nameBox = makeTextBox(petContainer, "Pet Name", UDim2.new(0.05, 0, 0.02, 0))
+local weightBox = makeTextBox(petContainer, "Weight", UDim2.new(0.05, 0, 0.22, 0))
 weightBox.Size = UDim2.new(0.42, 0, 0, 30)
-weightBox.Position = UDim2.new(0.05, 0, 0.22, 0)
-weightBox.PlaceholderText = "Weight"
-weightBox.BackgroundColor3 = Color3.fromRGB(140, 140, 140)
-weightBox.PlaceholderColor3 = Color3.new(1, 1, 1)
-weightBox.TextColor3 = Color3.new(1, 1, 1)
-weightBox.Font = Enum.Font.SourceSans
-weightBox.TextSize = 18
-Instance.new("UICorner", weightBox).CornerRadius = UDim.new(0, 6)
-
--- Age
-local ageBox = Instance.new("TextBox", petContainer)
+local ageBox = makeTextBox(petContainer, "Age", UDim2.new(0.53, 0, 0.22, 0))
 ageBox.Size = UDim2.new(0.42, 0, 0, 30)
-ageBox.Position = UDim2.new(0.53, 0, 0.22, 0)
-ageBox.PlaceholderText = "Age"
-ageBox.BackgroundColor3 = Color3.fromRGB(140, 140, 140)
-ageBox.PlaceholderColor3 = Color3.new(1, 1, 1)
-ageBox.TextColor3 = Color3.new(1, 1, 1)
-ageBox.Font = Enum.Font.SourceSans
-ageBox.TextSize = 18
-Instance.new("UICorner", ageBox).CornerRadius = UDim.new(0, 6)
 
--- Only allow numbers
 for _, box in ipairs({weightBox, ageBox}) do
 	box:GetPropertyChangedSignal("Text"):Connect(function()
 		box.Text = box.Text:gsub("%D", "")
 	end)
 end
 
--- SPAWN Button
-local spawnBtn = Instance.new("TextButton", petContainer)
-spawnBtn.Text = "SPAWN PET"
-spawnBtn.Size = UDim2.new(0.9, 0, 0, 30)
-spawnBtn.Position = UDim2.new(0.05, 0, 0.45, 0)
-spawnBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-spawnBtn.TextColor3 = Color3.new(1, 1, 1)
-spawnBtn.Font = Enum.Font.SourceSans
-spawnBtn.TextSize = 18
-Instance.new("UICorner", spawnBtn).CornerRadius = UDim.new(0, 8)
+-- Spawn and Dupe Buttons
+local function makeBtn(text, posY, parent)
+	local btn = Instance.new("TextButton", parent)
+	btn.Text = text
+	btn.Size = UDim2.new(0.9, 0, 0, 30)
+	btn.Position = UDim2.new(0.05, 0, posY, 0)
+	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.SourceSans
+	btn.TextSize = 18
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+	return btn
+end
 
--- DUPE Button
-local dupeBtn = Instance.new("TextButton", petContainer)
-dupeBtn.Text = "DUPE PET"
-dupeBtn.Size = UDim2.new(0.9, 0, 0, 30)
-dupeBtn.Position = UDim2.new(0.05, 0, 0.65, 0)
-dupeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-dupeBtn.TextColor3 = Color3.new(1, 1, 1)
-dupeBtn.Font = Enum.Font.SourceSans
-dupeBtn.TextSize = 18
-Instance.new("UICorner", dupeBtn).CornerRadius = UDim.new(0, 8)
+local spawnBtn = makeBtn("SPAWN PET", 0.45, petContainer)
+local dupeBtn = makeBtn("DUPE PET", 0.65, petContainer)
 
+-- Tab switching
+tabPet.MouseButton1Click:Connect(function()
+	petContainer.Visible = true
+	seedContainer.Visible = false
+end)
+tabSeed.MouseButton1Click:Connect(function()
+	petContainer.Visible = false
+	seedContainer.Visible = true
+end)
+
+-- Dupe tool you’re holding
 dupeBtn.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if not char then return end
-
 	local held = char:FindFirstChildOfClass("Tool")
 	if not held then warn("No tool held"); return end
 
@@ -182,33 +178,4 @@ dupeBtn.MouseButton1Click:Connect(function()
 
 	task.wait(0.1)
 	player.Character.Humanoid:EquipTool(clone)
-
-	-- Optional: Play animation if found
-	local handle = clone:FindFirstChild("Handle")
-	if handle then
-		local anim = handle:FindFirstChildWhichIsA("Animation")
-		if anim then
-			local animator = handle:FindFirstChildWhichIsA("Animator") or Instance.new("AnimationController", handle)
-			local track = animator:LoadAnimation(anim)
-			track:Play()
-		end
-	end
-end)
-
--- SEED container (blank for now)
-local seedContainer = Instance.new("Frame", frame)
-seedContainer.Size = petContainer.Size
-seedContainer.Position = petContainer.Position
-seedContainer.BackgroundTransparency = 1
-seedContainer.Visible = false
-
--- Tab Switching
-tabPet.MouseButton1Click:Connect(function()
-	petContainer.Visible = true
-	seedContainer.Visible = false
-end)
-
-tabSeed.MouseButton1Click:Connect(function()
-	petContainer.Visible = false
-	seedContainer.Visible = true
 end)
