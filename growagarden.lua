@@ -132,21 +132,27 @@ dupeBtn.MouseButton1Click:Connect(function()
 
     if isPet then
         local clone = held:Clone()
+        clone.Name = held.Name .. "_Clone"
         clone.Parent = backpack
+
+        task.wait(0.1)
+        player.Character.Humanoid:EquipTool(clone)
 
         local handle = clone:FindFirstChild("Handle")
         if handle then
-            local animator = handle:FindFirstChildWhichIsA("Animator") or handle:FindFirstChildWhichIsA("AnimationController")
-            if not animator then
-                animator = Instance.new("AnimationController")
-                animator.Name = "Animator"
-                animator.Parent = handle
-            end
-
             local anim = handle:FindFirstChildWhichIsA("Animation")
             if anim then
+                local animator = handle:FindFirstChildWhichIsA("Animator") or handle:FindFirstChildWhichIsA("AnimationController")
+                if not animator then
+                    animator = Instance.new("AnimationController")
+                    animator.Name = "Animator"
+                    animator.Parent = handle
+                end
+
                 local track = animator:LoadAnimation(anim)
-                track:Play()
+                if track then
+                    track:Play()
+                end
             end
         end
     else
