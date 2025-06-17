@@ -194,42 +194,48 @@ dupeBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    -- Create clone with animations
+    -- Create enhanced clone
     local fakeClone = tool:Clone()
     
-    -- Keep animations but disable functionality
+    -- Remove ONLY placement/functional scripts
     for _,v in pairs(fakeClone:GetDescendants()) do
         if v:IsA("Script") or v:IsA("LocalScript") then
-            -- Keep animation scripts, remove others
-            if not v.Name:match("Animate") and not v:IsA("Animation") then
+            -- Keep animation and tool grip scripts
+            if not (v.Name:match("Animate")) 
+               and not (v.Name:match("Animation"))
+               and not (v.Name:match("Grip")) then
                 v:Destroy()
             end
         end
     end
 
-    -- Disable placement/usage
-    fakeClone.Enabled = false
+    -- Configure for holding animations
+    fakeClone.Enabled = true
+    fakeClone.ManualActivationOnly = false
+    fakeClone.RequiresHandle = true
+    
+    -- Disable placement functionality
     if fakeClone:FindFirstChild("CanBeDropped") then
         fakeClone.CanBeDropped = false
     end
     
-    -- Allow animations to play
-    fakeClone.ManualActivationOnly = true
-    fakeClone.RequiresHandle = true  -- Needed for animations
-    
-    -- Maintain original name
-    fakeClone.Name = tool.Name
-    
-    -- Special case: If pet has Humanoid, keep its animations
+    -- Special handling for Humanoid pets
     if fakeClone:FindFirstChildOfClass("Humanoid") then
-        local animateScript = fakeClone:FindFirstChild("Animate")
-        if animateScript then
-            animateScript:Clone().Parent = fakeClone
-        end
+        -- Ensure animations will play
+        local animate = fakeClone:FindFirstChild("Animate") or Instance.new("Script")
+        animate.Name = "Animate"
+        animate.Parent = fakeClone
+    end
+
+    -- Maintain original appearance
+    fakeClone.Name = tool.Name
+    fakeClone.Parent = backpack
+
+    -- Equip automatically (optional)
+    task.wait(0.2)
+    if char:FindFirstChildOfClass("Humanoid") then
+        char.Humanoid:EquipTool(fakeClone)
     end
     
-    -- Add to inventory
-    fakeClone.Parent = backpack
-    
-    print("Created animated duplicate of: "..tool.Name)
+    print("Created holdable animated duplicate of: "..tool.Name)
 end)
