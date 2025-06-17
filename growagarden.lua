@@ -8,25 +8,25 @@ local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
 
--- Toggle Button to reopen UI
+-- Toggle Button to reopen UI (made smaller)
 local toggleButton = Instance.new("TextButton", screenGui)
-toggleButton.Size = UDim2.new(0, 100, 0, 35)
+toggleButton.Size = UDim2.new(0, 80, 0, 25)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.Text = "Open UI"
 toggleButton.Font = Enum.Font.SourceSans
-toggleButton.TextSize = 18
+toggleButton.TextSize = 14
 toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 6)
 
--- Main UI Frame
+-- Main UI Frame (reduced size)
 local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 300, 0, 340)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -170)
+mainFrame.Size = UDim2.new(0, 250, 0, 280) -- Smaller dimensions
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -140) -- Centered
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
 -- Draggable logic
 local dragging, dragStart, startPos
@@ -58,148 +58,140 @@ toggleButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
 
--- Header with new title design
+-- Header with new title design (smaller)
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 65)
+header.Size = UDim2.new(1, 0, 0, 50) -- Reduced height
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
-Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
--- Main Title "PET/SEED SPAWNER"
+-- Main Title "PET/SEED SPAWNER" (smaller text)
 local title = Instance.new("TextLabel", header)
 title.Text = "PET/SEED SPAWNER"
-title.Size = UDim2.new(1, 0, 0, 25)
+title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 5)
 title.Font = Enum.Font.SourceSansBold
-title.TextSize = 20
+title.TextSize = 16 -- Smaller font
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
 
--- Credit "by @zenxq"
+-- Credit "by @zenxq" (smaller text)
 local credit = Instance.new("TextLabel", header)
 credit.Text = "by @zenxq"
-credit.Size = UDim2.new(1, 0, 0, 15)
-credit.Position = UDim2.new(0, 0, 0, 30)
+credit.Size = UDim2.new(1, 0, 0, 12)
+credit.Position = UDim2.new(0, 0, 0, 25)
 credit.Font = Enum.Font.SourceSans
-credit.TextSize = 12
+credit.TextSize = 10 -- Smaller font
 credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)
 credit.BackgroundTransparency = 1
 
 -- Tab Buttons (positioned below title and credit)
 local petTab = Instance.new("TextButton", header)
 petTab.Text = "PET"
-petTab.Size = UDim2.new(0.5, 0, 0, 30)
-petTab.Position = UDim2.new(0, 0, 0, 45)
+petTab.Size = UDim2.new(0.5, 0, 0, 25) -- Smaller height
+petTab.Position = UDim2.new(0, 0, 0, 38) -- Adjusted position
 petTab.Font = Enum.Font.SourceSans
 petTab.TextColor3 = Color3.new(1, 1, 1)
-petTab.TextSize = 20
+petTab.TextSize = 16 -- Smaller font
 petTab.BackgroundTransparency = 1
 
 local seedTab = Instance.new("TextButton", header)
 seedTab.Text = "SEED"
-seedTab.Size = UDim2.new(0.5, 0, 0, 30)
-seedTab.Position = UDim2.new(0.5, 0, 0, 45)
+seedTab.Size = UDim2.new(0.5, 0, 0, 25) -- Smaller height
+seedTab.Position = UDim2.new(0.5, 0, 0, 38) -- Adjusted position
 seedTab.Font = Enum.Font.SourceSans
 seedTab.TextColor3 = Color3.new(1, 1, 1)
-seedTab.TextSize = 20
+seedTab.TextSize = 16 -- Smaller font
 seedTab.BackgroundTransparency = 1
 
--- Close Button
+-- Close Button (smaller)
 local closeBtn = Instance.new("TextButton", header)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 5)
+closeBtn.Size = UDim2.new(0, 25, 0, 25) -- Smaller size
+closeBtn.Position = UDim2.new(1, -30, 0, 5) -- Adjusted position
 closeBtn.Text = "X"
 closeBtn.Font = Enum.Font.SourceSans
-closeBtn.TextSize = 18
+closeBtn.TextSize = 16 -- Smaller font
 closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
 
--- Tab Frames (adjusted position for larger header)
+-- Tab Frames (adjusted position for smaller header)
 local petTabFrame = Instance.new("Frame", mainFrame)
-petTabFrame.Position = UDim2.new(0, 0, 0, 65)
-petTabFrame.Size = UDim2.new(1, 0, 1, -65)
+petTabFrame.Position = UDim2.new(0, 0, 0, 50) -- Adjusted for smaller header
+petTabFrame.Size = UDim2.new(1, 0, 1, -50) -- Adjusted for smaller header
 petTabFrame.BackgroundTransparency = 1
 
 local seedTabFrame = petTabFrame:Clone()
 seedTabFrame.Parent = mainFrame
 seedTabFrame.Visible = false
 
--- Helper: Create TextBox
+-- Helper: Create TextBox (smaller)
 local function createTextBox(parent, placeholder, position)
 	local box = Instance.new("TextBox", parent)
-	box.Size = UDim2.new(0.9, 0, 0, 30)
+	box.Size = UDim2.new(0.9, 0, 0, 25) -- Smaller height
 	box.Position = position
 	box.PlaceholderText = placeholder
 	box.Text = ""
 	box.Font = Enum.Font.SourceSans
-	box.TextSize = 18
+	box.TextSize = 14 -- Smaller font
 	box.TextColor3 = Color3.new(1, 1, 1)
 	box.PlaceholderColor3 = Color3.fromRGB(200, 200, 200)
 	box.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 5)
 	return box
 end
 
--- PET Tab UI
+-- PET Tab UI (with adjusted positions for smaller UI)
 local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.05, 0))
-local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.2, 0))
-local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.35, 0))
+local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.25, 0)) -- Adjusted position
+local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.45, 0)) -- Adjusted position
 
 -- Decimal number validation
 local function validateDecimalInput(textBox)
     textBox:GetPropertyChangedSignal("Text"):Connect(function()
-        -- Allow numbers and single decimal point
         local newText = textBox.Text:gsub("[^%d.]", "")
-        
-        -- Ensure only one decimal point exists
         local decimalCount = select(2, newText:gsub("%.", ""))
         if decimalCount > 1 then
-            -- If multiple decimals, keep only the first one
             local parts = {}
             for part in newText:gmatch("[^.]+") do
                 table.insert(parts, part)
             end
             newText = parts[1].."."..(parts[2] or "")
         end
-        
-        -- Don't allow decimal point at start
         if newText:sub(1,1) == "." then
             newText = "0"..newText
         end
-        
         textBox.Text = newText
     end)
 end
 
--- Apply decimal validation
 validateDecimalInput(weightBox)
 validateDecimalInput(ageBox)
 
--- Helper: Create Button
+-- Helper: Create Button (smaller)
 local function createButton(parent, text, posY)
 	local btn = Instance.new("TextButton", parent)
-	btn.Size = UDim2.new(0.9, 0, 0, 30)
+	btn.Size = UDim2.new(0.9, 0, 0, 25) -- Smaller height
 	btn.Position = UDim2.new(0.05, 0, posY, 0)
 	btn.Text = text
 	btn.Font = Enum.Font.SourceSans
-	btn.TextSize = 18
+	btn.TextSize = 14 -- Smaller font
 	btn.TextColor3 = Color3.new(1, 1, 1)
 	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 	return btn
 end
 
-local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.55)
-local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.7)
+local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65) -- Adjusted position
+local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.8) -- Adjusted position
 
--- SEED Tab content
+-- SEED Tab content (smaller)
 local seedLabel = Instance.new("TextLabel", seedTabFrame)
-seedLabel.Size = UDim2.new(1, 0, 0, 30)
+seedLabel.Size = UDim2.new(1, 0, 0, 25) -- Smaller
 seedLabel.Position = UDim2.new(0, 0, 0.1, 0)
 seedLabel.Text = "Seed tab content coming soon..."
 seedLabel.Font = Enum.Font.SourceSans
-seedLabel.TextSize = 18
+seedLabel.TextSize = 14 -- Smaller font
 seedLabel.TextColor3 = Color3.new(1, 1, 1)
 seedLabel.BackgroundTransparency = 1
 
@@ -219,7 +211,7 @@ closeBtn.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 end)
 
--- Spawn Pet Functionality
+-- Spawn Pet Functionality (unchanged)
 spawnBtn.MouseButton1Click:Connect(function()
     local petName = petNameBox.Text
     local petWeight = tonumber(weightBox.Text) or 1
@@ -230,13 +222,11 @@ spawnBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    -- Find the pet template in the game
     local petTemplate
     local validPets = {"Bee", "Slime", "Chick", "Bat", "Pupper", "Mole"}
     
     for _, petType in pairs(validPets) do
         if string.find(petName:lower(), petType:lower()) then
-            -- Search in workspace and ReplicatedStorage for the pet model
             petTemplate = game:GetService("ReplicatedStorage"):FindFirstChild(petType) or
                          game:GetService("Workspace"):FindFirstChild(petType)
             if petTemplate then break end
@@ -248,33 +238,26 @@ spawnBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    -- Create the visual pet
     local visualPet = petTemplate:Clone()
     visualPet.Name = petName
     
-    -- Configure pet properties
     if visualPet:FindFirstChild("Configuration") then
         local config = visualPet.Configuration
         if config:FindFirstChild("Weight") then config.Weight.Value = petWeight end
         if config:FindFirstChild("Age") then config.Age.Value = petAge end
     end
 
-    -- Make it a tool so it can be held
     visualPet.Parent = game:GetService("Players").LocalPlayer.Backpack
     
-    -- Handle animations
     if visualPet:FindFirstChildOfClass("Humanoid") then
-        -- For humanoid pets
         local humanoid = visualPet:FindFirstChildOfClass("Humanoid")
         if not humanoid:FindFirstChildOfClass("Animator") then
             Instance.new("Animator").Parent = humanoid
         end
     elseif visualPet:FindFirstChild("Animate") then
-        -- For non-humanoid pets with animation scripts
         visualPet.Animate:Clone().Parent = visualPet
     end
 
-    -- Auto-equip the pet
     task.wait(0.2)
     local char = game:GetService("Players").LocalPlayer.Character
     if char and char:FindFirstChildOfClass("Humanoid") then
@@ -284,7 +267,7 @@ spawnBtn.MouseButton1Click:Connect(function()
     print("Spawned visual pet:", petName, "Weight:", petWeight, "Age:", petAge)
 end)
 
--- Enhanced Dupe Logic with Full Animation Preservation
+-- Enhanced Dupe Logic (unchanged)
 dupeBtn.MouseButton1Click:Connect(function()
     local player = game:GetService("Players").LocalPlayer
     local backpack = player:WaitForChild("Backpack")
@@ -292,17 +275,14 @@ dupeBtn.MouseButton1Click:Connect(function()
     
     if not char then return end
     
-    -- Find equipped pet
     local tool = char:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
     if not tool then
         warn("No pet found equipped or in backpack")
         return
     end
 
-    -- Create enhanced clone
     local fakeClone = tool:Clone()
     
-    -- Remove ONLY placement/functional scripts while keeping animations
     for _,v in pairs(fakeClone:GetDescendants()) do
         if v:IsA("Script") or v:IsA("LocalScript") then
             if not (v.Name:match("Animate")) 
@@ -316,7 +296,6 @@ dupeBtn.MouseButton1Click:Connect(function()
         end
     end
 
-    -- Special animation handling
     if fakeClone:FindFirstChildOfClass("Humanoid") then
         local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
         if not humanoid:FindFirstChildOfClass("Animator") then
@@ -342,7 +321,6 @@ dupeBtn.MouseButton1Click:Connect(function()
         end
     end
 
-    -- Configure for animation
     fakeClone.Enabled = true
     fakeClone.ManualActivationOnly = false
     fakeClone.RequiresHandle = true
@@ -354,7 +332,6 @@ dupeBtn.MouseButton1Click:Connect(function()
     fakeClone.Name = tool.Name
     fakeClone.Parent = backpack
 
-    -- Auto-equip
     task.wait(0.2)
     if char:FindFirstChildOfClass("Humanoid") then
         char.Humanoid:EquipTool(fakeClone)
