@@ -187,28 +187,38 @@ dupeBtn.MouseButton1Click:Connect(function()
     
     if not char then return end
     
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-    if not humanoid then return end
-    
-    local tool = humanoid:FindFirstChildOfClass("Tool") or char:FindFirstChildOfClass("Tool")
-    if not tool then 
-        warn("No tool equipped.") 
-        return 
+    -- Find equipped pet (checks both character and backpack)
+    local tool = char:FindFirstChildOfClass("Tool") or player.Backpack:FindFirstChildOfClass("Tool")
+    if not tool then
+        warn("No pet found equipped or in backpack")
+        return
     end
 
-    local validPets = { "Bee", "Slime", "Chick", "Bat", "Pupper" }
-    for _, name in ipairs(validPets) do
-        if tool.Name:lower():find(name:lower()) then
-            local clone = tool:Clone()
-            clone.Parent = backpack
-            
-            -- Wait a frame to ensure tool is ready
-            wait(0.1)
-            
-            humanoid:EquipTool(clone)
-            print("Duplicated:", clone.Name)
-            return
+    -- Create visual clone
+    local fakeClone = tool:Clone()
+    
+    -- Remove all scripts to prevent functionality
+    for _,v in pairs(fakeClone:GetDescendants()) do
+        if v:IsA("Script") or v:IsA("LocalScript") then
+            v:Destroy()
         end
     end
-    warn("Not a valid pet tool.")
+
+    -- Disable tool functionality
+    fakeClone.Enabled = false
+    if fakeClone:FindFirstChild("CanBeDropped") then
+        fakeClone.CanBeDropped = false
+    end
+    
+    -- Make harder to accidentally equip
+    fakeClone.ManualActivationOnly = true
+    fakeClone.RequiresHandle = false
+    
+    -- Add to inventory
+    fakeClone.Parent = backpack
+    
+    -- Optional: Rename slightly to avoid detection
+    fakeClone.Name = tool.Name.."_Copy"
+    
+    print("Successfully created visual duplicate: "..fakeClone.Name)
 end)
