@@ -26,7 +26,6 @@ mainFrame.Position = UDim2.new(0.5, -150, 0.5, -170)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
-mainFrame.Visible = false
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
 
 -- Draggable logic
@@ -180,16 +179,12 @@ spawnBtn.MouseButton1Click:Connect(function()
 	print("Spawned:", petNameBox.Text, "Weight:", weightBox.Text, "Age:", ageBox.Text)
 end)
 
--- ✅ Dupe Logic - Now Fixed
+-- Dupe Logic (works if holding a valid Tool)
 dupeBtn.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if not char then return end
-
 	local tool = char:FindFirstChildOfClass("Tool")
-	if not tool then
-		warn("No tool equipped.")
-		return
-	end
+	if not tool then warn("No tool equipped.") return end
 
 	local validPets = { "Bee", "Slime", "Chick", "Bat", "Pupper" }
 	for _, name in ipairs(validPets) do
@@ -201,6 +196,5 @@ dupeBtn.MouseButton1Click:Connect(function()
 			return
 		end
 	end
-
 	warn("Not a valid pet tool.")
 end)
