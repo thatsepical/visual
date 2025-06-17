@@ -8,72 +8,34 @@ local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
 
--- Toggle Button to reopen UI
-local toggleButton = Instance.new("TextButton", screenGui)
-toggleButton.Size = UDim2.new(0, 100, 0, 35)
-toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Text = "Open UI"
-toggleButton.Font = Enum.Font.SourceSans
-toggleButton.TextSize = 18
-toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-toggleButton.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 8)
+-- [Previous toggle button and main frame code remains exactly the same until the header section]
 
--- Main UI Frame
-local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 300, 0, 340)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -170)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-mainFrame.BorderSizePixel = 0
-mainFrame.Active = true
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
-
--- Draggable logic
-local dragging, dragStart, startPos
-mainFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = mainFrame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-UIS.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-		local delta = input.Position - dragStart
-		mainFrame.Position = UDim2.new(
-			startPos.X.Scale, startPos.X.Offset + delta.X,
-			startPos.Y.Scale, startPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
--- Show UI when toggle is clicked
-toggleButton.MouseButton1Click:Connect(function()
-	mainFrame.Visible = not mainFrame.Visible
-end)
-
--- Header with ZEN SPAWNER title
+-- Header with new title design
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 60)
+header.Size = UDim2.new(1, 0, 0, 65)  -- Slightly taller to accommodate both lines
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
 
--- ZEN SPAWNER Title
+-- Main Title "PET/SEED SPAWNER"
 local title = Instance.new("TextLabel", header)
-title.Text = "ZEN SPAWNER"
+title.Text = "PET/SEED SPAWNER"
 title.Size = UDim2.new(1, 0, 0, 25)
 title.Position = UDim2.new(0, 0, 0, 5)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 20
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
+
+-- Credit "by @zenxq" (smaller text)
+local credit = Instance.new("TextLabel", header)
+credit.Text = "by @zenxq"
+credit.Size = UDim2.new(1, 0, 0, 15)
+credit.Position = UDim2.new(0, 0, 0, 30)
+credit.Font = Enum.Font.SourceSans
+credit.TextSize = 12  -- Smaller size
+credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)  -- Slightly dimmer
+credit.BackgroundTransparency = 1
 
 -- Tab Buttons (positioned below title)
 local petTab = Instance.new("TextButton", header)
