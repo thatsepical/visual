@@ -1,3 +1,4 @@
+-- Grow a Garden Ultimate Pet Spawner
 local player = game:GetService("Players").LocalPlayer
 local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
@@ -8,7 +9,7 @@ local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
 
--- Toggle Button to reopen UI
+-- Toggle Button
 local toggleButton = Instance.new("TextButton", screenGui)
 toggleButton.Size = UDim2.new(0, 100, 0, 35)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
@@ -28,10 +29,10 @@ mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
 
--- Draggable logic
+-- Draggable UI
 local dragging, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
 		dragStart = input.Position
 		startPos = mainFrame.Position
@@ -44,7 +45,7 @@ mainFrame.InputBegan:Connect(function(input)
 end)
 
 UIS.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 		local delta = input.Position - dragStart
 		mainFrame.Position = UDim2.new(
 			startPos.X.Scale, startPos.X.Offset + delta.X,
@@ -53,21 +54,20 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
--- Show UI when toggle is clicked
 toggleButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
 
--- Header with new title design
+-- Header
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 65)
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
 
--- Main Title "PET/SEED SPAWNER"
+-- Title
 local title = Instance.new("TextLabel", header)
-title.Text = "PET/SEED SPAWNER"
+title.Text = "PET SPAWNER"
 title.Size = UDim2.new(1, 0, 0, 25)
 title.Position = UDim2.new(0, 0, 0, 5)
 title.Font = Enum.Font.SourceSansBold
@@ -75,7 +75,7 @@ title.TextSize = 20
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
 
--- Credit "by @zenxq"
+-- Credit
 local credit = Instance.new("TextLabel", header)
 credit.Text = "by @zenxq"
 credit.Size = UDim2.new(1, 0, 0, 15)
@@ -85,7 +85,7 @@ credit.TextSize = 12
 credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)
 credit.BackgroundTransparency = 1
 
--- Tab Buttons (positioned below title and credit)
+-- Tab Buttons
 local petTab = Instance.new("TextButton", header)
 petTab.Text = "PET"
 petTab.Size = UDim2.new(0.5, 0, 0, 30)
@@ -115,7 +115,7 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
--- Tab Frames (adjusted position for larger header)
+-- Tab Frames
 local petTabFrame = Instance.new("Frame", mainFrame)
 petTabFrame.Position = UDim2.new(0, 0, 0, 65)
 petTabFrame.Size = UDim2.new(1, 0, 1, -65)
@@ -125,7 +125,7 @@ local seedTabFrame = petTabFrame:Clone()
 seedTabFrame.Parent = mainFrame
 seedTabFrame.Visible = false
 
--- Helper: Create TextBox
+-- TextBox Helper
 local function createTextBox(parent, placeholder, position)
 	local box = Instance.new("TextBox", parent)
 	box.Size = UDim2.new(0.9, 0, 0, 30)
@@ -141,42 +141,34 @@ local function createTextBox(parent, placeholder, position)
 	return box
 end
 
--- PET Tab UI
+-- Input Fields
 local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.05, 0))
 local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.2, 0))
 local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.35, 0))
 
--- Decimal number validation
+-- Number Validation
 local function validateDecimalInput(textBox)
     textBox:GetPropertyChangedSignal("Text"):Connect(function()
-        -- Allow numbers and single decimal point
         local newText = textBox.Text:gsub("[^%d.]", "")
-        
-        -- Ensure only one decimal point exists
         local decimalCount = select(2, newText:gsub("%.", ""))
         if decimalCount > 1 then
-            -- If multiple decimals, keep only the first one
             local parts = {}
             for part in newText:gmatch("[^.]+") do
                 table.insert(parts, part)
             end
             newText = parts[1].."."..(parts[2] or "")
         end
-        
-        -- Don't allow decimal point at start
         if newText:sub(1,1) == "." then
             newText = "0"..newText
         end
-        
         textBox.Text = newText
     end)
 end
 
--- Apply decimal validation
 validateDecimalInput(weightBox)
 validateDecimalInput(ageBox)
 
--- Helper: Create Button
+-- Button Helper
 local function createButton(parent, text, posY)
 	local btn = Instance.new("TextButton", parent)
 	btn.Size = UDim2.new(0.9, 0, 0, 30)
@@ -193,7 +185,7 @@ end
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.55)
 local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.7)
 
--- SEED Tab content
+-- Seed Tab
 local seedLabel = Instance.new("TextLabel", seedTabFrame)
 seedLabel.Size = UDim2.new(1, 0, 0, 30)
 seedLabel.Position = UDim2.new(0, 0, 0.1, 0)
@@ -214,158 +206,185 @@ seedTab.MouseButton1Click:Connect(function()
 	seedTabFrame.Visible = true
 end)
 
--- Close
+-- Close UI
 closeBtn.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 end)
 
--- Spawn Pet Functionality
+-- PET SPAWNING SYSTEM
+local petDatabase = {
+    GoldenLab = "GoldenLabPet", Dog = "DogModel", Bunny = "BunnyPet", 
+    BlackBunny = "BlackBunnyPet", Chicken = "ChickenPet", Cat = "CatModel", 
+    OrangeTabby = "OrangeTabbyCat", Deer = "DeerPet", SpottedDeer = "SpottedDeerPet", 
+    Pig = "PigPet", Monkey = "MonkeyPet", SilverMonkey = "SilverMonkeyPet", 
+    Rooster = "RoosterPet", Cow = "CowPet", SeaOtter = "SeaOtterPet", 
+    Turtle = "TurtlePet", PolarBear = "PolarBearPet", Panda = "PandaPet", 
+    Snail = "SnailPet", GiantAnt = "GiantAntPet", Caterpillar = "CaterpillarPet", 
+    PrayingMantis = "PrayingMantisPet", Dragonfly = "DragonflyPet", 
+    Raccoon = "RaccoonPet", Hedgehog = "HedgehogPet", Frog = "FrogPet", 
+    EchoFrog = "EchoFrogPet", Owl = "OwlPet", NightOwl = "NightOwlPet", 
+    Kiwi = "KiwiPet", BloodHedgehog = "BloodHedgehogPet", Mole = "MolePet",
+    DiscoBee = "DiscoBeePet", Butterfly = "ButterflyPet", 
+    QueenBee = "QueenBeePet", BloodOwl = "BloodOwlPet"
+}
+
+local function loadPetAnimations(pet)
+    local animFolder = game:GetService("ReplicatedStorage"):FindFirstChild("PetAnimations")
+    if animFolder then
+        local petAnims = animFolder:FindFirstChild(pet.Name) or animFolder:FindFirstChild(pet:GetAttribute("BasePet"))
+        if petAnims then
+            local animator = pet:FindFirstChildOfClass("Humanoid") or pet:FindFirstChildOfClass("Animator")
+            if animator then
+                for _, anim in pairs(petAnims:GetChildren()) do
+                    if anim:IsA("Animation") then
+                        local track = animator:LoadAnimation(anim)
+                        if anim.Name == "IdleAnimation" then
+                            track.Looped = true
+                            track:Play()
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function spawnGardenPet(petType, weight, age)
+    local modelName = petDatabase[petType]
+    if not modelName then return warn("Pet not in database") end
+    
+    local petModel
+    for _, location in pairs({
+        game:GetService("ReplicatedStorage").Pets,
+        game:GetService("ReplicatedStorage").SpecialPets,
+        workspace.LivePets
+    }) do
+        if location and location:FindFirstChild(modelName) then
+            petModel = location:FindFirstChild(modelName)
+            break
+        end
+    end
+
+    if petModel then
+        local newPet = petModel:Clone()
+        newPet.Name = petType
+        newPet:SetAttribute("IsPlayerPet", true)
+        
+        local config = Instance.new("Folder")
+        config.Name = "Configuration"
+        
+        local weightVal = Instance.new("NumberValue")
+        weightVal.Name = "Weight"
+        weightVal.Value = math.clamp(tonumber(weight) or 10, 1, 1000)
+        weightVal.Parent = config
+        
+        local ageVal = Instance.new("NumberValue")
+        ageVal.Name = "Age"
+        ageVal.Value = math.clamp(tonumber(age) or 100, 1, 1000)
+        ageVal.Parent = config
+        
+        config.Parent = newPet
+        
+        loadPetAnimations(newPet)
+        newPet.Parent = backpack
+        
+        task.wait(0.3)
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character.Humanoid:EquipTool(newPet)
+        end
+        
+        return newPet
+    else
+        warn("Model not found: "..modelName)
+        return nil
+    end
+end
+
+-- Spawn Button
 spawnBtn.MouseButton1Click:Connect(function()
-    local petName = petNameBox.Text
-    local petWeight = tonumber(weightBox.Text) or 1
-    local petAge = tonumber(ageBox.Text) or 1
+    local input = string.lower(petNameBox.Text)
+    local petType
     
-    if not petName or string.len(petName) < 2 then
-        warn("Please enter a valid pet name")
-        return
-    end
-
-    -- Find the pet template in the game
-    local petTemplate
-    local validPets = {"Bee", "Slime", "Chick", "Bat", "Pupper", "Mole"}
-    
-    for _, petType in pairs(validPets) do
-        if string.find(petName:lower(), petType:lower()) then
-            -- Search in workspace and ReplicatedStorage for the pet model
-            petTemplate = game:GetService("ReplicatedStorage"):FindFirstChild(petType) or
-                         game:GetService("Workspace"):FindFirstChild(petType)
-            if petTemplate then break end
+    for name in pairs(petDatabase) do
+        if string.find(input, string.lower(name)) then
+            petType = name
+            break
         end
     end
 
-    if not petTemplate then
-        warn("Pet type not found in: "..table.concat(validPets, ", "))
-        return
-    end
-
-    -- Create the visual pet
-    local visualPet = petTemplate:Clone()
-    visualPet.Name = petName
-    
-    -- Configure pet properties
-    if visualPet:FindFirstChild("Configuration") then
-        local config = visualPet.Configuration
-        if config:FindFirstChild("Weight") then config.Weight.Value = petWeight end
-        if config:FindFirstChild("Age") then config.Age.Value = petAge end
-    end
-
-    -- Make it a tool so it can be held
-    visualPet.Parent = game:GetService("Players").LocalPlayer.Backpack
-    
-    -- Handle animations
-    if visualPet:FindFirstChildOfClass("Humanoid") then
-        -- For humanoid pets
-        local humanoid = visualPet:FindFirstChildOfClass("Humanoid")
-        if not humanoid:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator").Parent = humanoid
+    if petType then
+        spawnGardenPet(petType, weightBox.Text, ageBox.Text)
+    else
+        local petList = {}
+        for pet in pairs(petDatabase) do
+            table.insert(petList, pet)
         end
-    elseif visualPet:FindFirstChild("Animate") then
-        -- For non-humanoid pets with animation scripts
-        visualPet.Animate:Clone().Parent = visualPet
+        warn("Available pets: "..table.concat(petList, ", "))
     end
-
-    -- Auto-equip the pet
-    task.wait(0.2)
-    local char = game:GetService("Players").LocalPlayer.Character
-    if char and char:FindFirstChildOfClass("Humanoid") then
-        char:FindFirstChildOfClass("Humanoid"):EquipTool(visualPet)
-    end
-
-    print("Spawned visual pet:", petName, "Weight:", petWeight, "Age:", petAge)
 end)
 
--- Enhanced Dupe Logic with Full Animation Preservation
+-- Duplication Button
 dupeBtn.MouseButton1Click:Connect(function()
-    local player = game:GetService("Players").LocalPlayer
-    local backpack = player:WaitForChild("Backpack")
     local char = player.Character or player.CharacterAdded:Wait()
-    
-    if not char then return end
-    
-    -- Find equipped pet
     local tool = char:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
-    if not tool then
-        warn("No pet found equipped or in backpack")
-        return
-    end
-
-    -- Create enhanced clone
-    local fakeClone = tool:Clone()
     
-    -- Remove ONLY placement/functional scripts while keeping animations
-    for _,v in pairs(fakeClone:GetDescendants()) do
-        if v:IsA("Script") or v:IsA("LocalScript") then
-            if not (v.Name:match("Animate")) 
-               and not (v.Name:match("Animation"))
-               and not (v.Name:match("Animator"))
-               and not (v.Name:match("Grip"))
-               and not (v.Name:match("Control"))
-               and not (v.Name:match("Motor")) then
-                v:Destroy()
+    if tool then
+        local fakeClone = tool:Clone()
+        
+        for _,v in pairs(fakeClone:GetDescendants()) do
+            if v:IsA("Script") or v:IsA("LocalScript") then
+                if not (v.Name:match("Animate")) 
+                   and not (v.Name:match("Animation"))
+                   and not (v.Name:match("Animator"))
+                   and not (v.Name:match("Grip"))
+                   and not (v.Name:match("Control"))
+                   and not (v.Name:match("Motor")) then
+                    v:Destroy()
+                end
             end
         end
-    end
 
-    -- Special animation handling
-    if fakeClone:FindFirstChildOfClass("Humanoid") then
-        local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
-        if not humanoid:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator").Parent = humanoid
+        if fakeClone:FindFirstChildOfClass("Humanoid") then
+            local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
+            if not humanoid:FindFirstChildOfClass("Animator") then
+                Instance.new("Animator").Parent = humanoid
+            end
+            
+            local originalHumanoid = tool:FindFirstChildOfClass("Humanoid")
+            if originalHumanoid and originalHumanoid:FindFirstChildOfClass("Animator") then
+                for _,track in pairs(originalHumanoid.Animator:GetPlayingAnimationTracks()) do
+                    humanoid.Animator:LoadAnimation(track.Animation):Play()
+                end
+            end
+        else
+            local animateScript = tool:FindFirstChild("Animate") 
+            if animateScript then
+                animateScript:Clone().Parent = fakeClone
+            end
+            
+            for _,anim in pairs(tool:GetDescendants()) do
+                if anim:IsA("Animation") then
+                    anim:Clone().Parent = fakeClone
+                end
+            end
+        end
+
+        fakeClone.Enabled = true
+        fakeClone.ManualActivationOnly = false
+        fakeClone.RequiresHandle = true
+        
+        if fakeClone:FindFirstChild("CanBeDropped") then
+            fakeClone.CanBeDropped = false
         end
         
-        local originalHumanoid = tool:FindFirstChildOfClass("Humanoid")
-        if originalHumanoid and originalHumanoid:FindFirstChildOfClass("Animator") then
-            for _,track in pairs(originalHumanoid.Animator:GetPlayingAnimationTracks()) do
-                humanoid.Animator:LoadAnimation(track.Animation):Play()
-            end
+        fakeClone.Name = tool.Name
+        fakeClone.Parent = backpack
+
+        task.wait(0.2)
+        if char:FindFirstChildOfClass("Humanoid") then
+            char.Humanoid:EquipTool(fakeClone)
         end
     else
-        local animateScript = tool:FindFirstChild("Animate") 
-        if animateScript then
-            animateScript:Clone().Parent = fakeClone
-        end
-        
-        for _,anim in pairs(tool:GetDescendants()) do
-            if anim:IsA("Animation") then
-                anim:Clone().Parent = fakeClone
-            end
-        end
+        warn("No pet equipped to duplicate")
     end
-
-    -- Configure for animation
-    fakeClone.Enabled = true
-    fakeClone.ManualActivationOnly = false
-    fakeClone.RequiresHandle = true
-    
-    if fakeClone:FindFirstChild("CanBeDropped") then
-        fakeClone.CanBeDropped = false
-    end
-    
-    fakeClone.Name = tool.Name
-    fakeClone.Parent = backpack
-
-    -- Auto-equip
-    task.wait(0.2)
-    if char:FindFirstChildOfClass("Humanoid") then
-        char.Humanoid:EquipTool(fakeClone)
-        
-        task.wait(0.1)
-        if fakeClone:FindFirstChildOfClass("Humanoid") then
-            for _,track in pairs(fakeClone.Humanoid.Animator:GetPlayingAnimationTracks()) do
-                track:Play()
-            end
-        end
-    end
-    
-    print("Created animated duplicate of: "..tool.Name)
 end)
