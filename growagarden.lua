@@ -203,9 +203,7 @@ spawnBtn.MouseButton1Click:Connect(function()
 	print("Spawned:", petNameBox.Text, "Weight:", weightBox.Text, "Age:", ageBox.Text)
 end)
 
--- Dupe Logic (works if holding a valid Tool)
-dupeBtn.MouseButton1Click:Connect(function()
-    -- Enhanced Dupe Logic with Animation Preservation
+-- Enhanced Dupe Logic with Animation Preservation
 dupeBtn.MouseButton1Click:Connect(function()
     local player = game:GetService("Players").LocalPlayer
     local backpack = player:WaitForChild("Backpack")
