@@ -181,20 +181,34 @@ end)
 
 -- Dupe Logic (works if holding a valid Tool)
 dupeBtn.MouseButton1Click:Connect(function()
-	local char = player.Character
-	if not char then return end
-	local tool = char:FindFirstChildOfClass("Tool")
-	if not tool then warn("No tool equipped.") return end
+    local player = game:GetService("Players").LocalPlayer
+    local backpack = player:WaitForChild("Backpack")
+    local char = player.Character or player.CharacterAdded:Wait()
+    
+    if not char then return end
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    local tool = humanoid:FindFirstChildOfClass("Tool") or char:FindFirstChildOfClass("Tool")
+    if not tool then 
+        warn("No tool equipped.") 
+        return 
+    end
 
-	local validPets = { "Bee", "Slime", "Chick", "Bat", "Pupper" }
-	for _, name in ipairs(validPets) do
-		if tool.Name:lower():find(name:lower()) then
-			local clone = tool:Clone()
-			clone.Parent = backpack
-			player.Character.Humanoid:EquipTool(clone)
-			print("Duplicated:", clone.Name)
-			return
-		end
-	end
-	warn("Not a valid pet tool.")
+    local validPets = { "Bee", "Slime", "Chick", "Bat", "Pupper" }
+    for _, name in ipairs(validPets) do
+        if tool.Name:lower():find(name:lower()) then
+            local clone = tool:Clone()
+            clone.Parent = backpack
+            
+            -- Wait a frame to ensure tool is ready
+            wait(0.1)
+            
+            humanoid:EquipTool(clone)
+            print("Duplicated:", clone.Name)
+            return
+        end
+    end
+    warn("Not a valid pet tool.")
 end)
