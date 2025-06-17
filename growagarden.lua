@@ -8,11 +8,59 @@ local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
 
--- [Previous toggle button and main frame code remains exactly the same until the header section]
+-- Toggle Button to reopen UI
+local toggleButton = Instance.new("TextButton", screenGui)
+toggleButton.Size = UDim2.new(0, 100, 0, 35)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.Text = "Open UI"
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.TextSize = 18
+toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 8)
+
+-- Main UI Frame
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 300, 0, 340)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -170)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
+
+-- Draggable logic
+local dragging, dragStart, startPos
+mainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- Show UI when toggle is clicked
+toggleButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+end)
 
 -- Header with new title design
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 65)  -- Slightly taller to accommodate both lines
+header.Size = UDim2.new(1, 0, 0, 65)
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
@@ -27,21 +75,21 @@ title.TextSize = 20
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
 
--- Credit "by @zenxq" (smaller text)
+-- Credit "by @zenxq"
 local credit = Instance.new("TextLabel", header)
 credit.Text = "by @zenxq"
 credit.Size = UDim2.new(1, 0, 0, 15)
 credit.Position = UDim2.new(0, 0, 0, 30)
 credit.Font = Enum.Font.SourceSans
-credit.TextSize = 12  -- Smaller size
-credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)  -- Slightly dimmer
+credit.TextSize = 12
+credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)
 credit.BackgroundTransparency = 1
 
--- Tab Buttons (positioned below title)
+-- Tab Buttons (positioned below title and credit)
 local petTab = Instance.new("TextButton", header)
 petTab.Text = "PET"
 petTab.Size = UDim2.new(0.5, 0, 0, 30)
-petTab.Position = UDim2.new(0, 0, 0, 30)
+petTab.Position = UDim2.new(0, 0, 0, 45)
 petTab.Font = Enum.Font.SourceSans
 petTab.TextColor3 = Color3.new(1, 1, 1)
 petTab.TextSize = 20
@@ -50,7 +98,7 @@ petTab.BackgroundTransparency = 1
 local seedTab = Instance.new("TextButton", header)
 seedTab.Text = "SEED"
 seedTab.Size = UDim2.new(0.5, 0, 0, 30)
-seedTab.Position = UDim2.new(0.5, 0, 0, 30)
+seedTab.Position = UDim2.new(0.5, 0, 0, 45)
 seedTab.Font = Enum.Font.SourceSans
 seedTab.TextColor3 = Color3.new(1, 1, 1)
 seedTab.TextSize = 20
@@ -69,8 +117,8 @@ Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
 -- Tab Frames (adjusted position for larger header)
 local petTabFrame = Instance.new("Frame", mainFrame)
-petTabFrame.Position = UDim2.new(0, 0, 0, 60)
-petTabFrame.Size = UDim2.new(1, 0, 1, -60)
+petTabFrame.Position = UDim2.new(0, 0, 0, 65)
+petTabFrame.Size = UDim2.new(1, 0, 1, -65)
 petTabFrame.BackgroundTransparency = 1
 
 local seedTabFrame = petTabFrame:Clone()
