@@ -58,17 +58,28 @@ toggleButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
 
--- Header
+-- Header with ZEN SPAWNER title
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 40)
+header.Size = UDim2.new(1, 0, 0, 60)
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 10)
 
--- Tab Buttons
+-- ZEN SPAWNER Title
+local title = Instance.new("TextLabel", header)
+title.Text = "ZEN SPAWNER"
+title.Size = UDim2.new(1, 0, 0, 25)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 20
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+
+-- Tab Buttons (positioned below title)
 local petTab = Instance.new("TextButton", header)
 petTab.Text = "PET"
-petTab.Size = UDim2.new(0.5, 0, 1, 0)
+petTab.Size = UDim2.new(0.5, 0, 0, 30)
+petTab.Position = UDim2.new(0, 0, 0, 30)
 petTab.Font = Enum.Font.SourceSans
 petTab.TextColor3 = Color3.new(1, 1, 1)
 petTab.TextSize = 20
@@ -76,8 +87,8 @@ petTab.BackgroundTransparency = 1
 
 local seedTab = Instance.new("TextButton", header)
 seedTab.Text = "SEED"
-seedTab.Size = UDim2.new(0.5, 0, 1, 0)
-seedTab.Position = UDim2.new(0.5, 0, 0, 0)
+seedTab.Size = UDim2.new(0.5, 0, 0, 30)
+seedTab.Position = UDim2.new(0.5, 0, 0, 30)
 seedTab.Font = Enum.Font.SourceSans
 seedTab.TextColor3 = Color3.new(1, 1, 1)
 seedTab.TextSize = 20
@@ -94,10 +105,10 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
--- Tab Frames
+-- Tab Frames (adjusted position for larger header)
 local petTabFrame = Instance.new("Frame", mainFrame)
-petTabFrame.Position = UDim2.new(0, 0, 0, 40)
-petTabFrame.Size = UDim2.new(1, 0, 1, -40)
+petTabFrame.Position = UDim2.new(0, 0, 0, 60)
+petTabFrame.Size = UDim2.new(1, 0, 1, -60)
 petTabFrame.BackgroundTransparency = 1
 
 local seedTabFrame = petTabFrame:Clone()
