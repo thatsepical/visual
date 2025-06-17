@@ -218,7 +218,7 @@ dupeBtn.MouseButton1Click:Connect(function()
     fakeClone.Parent = backpack
     
     -- Optional: Rename slightly to avoid detection
-    fakeClone.Name = tool.Name.."_Copy"
+    fakeClone.Name = tool.Name..""
     
     print("Successfully created visual duplicate: "..fakeClone.Name)
 end)
