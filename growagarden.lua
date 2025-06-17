@@ -205,6 +205,15 @@ end)
 
 -- Dupe Logic (works if holding a valid Tool)
 dupeBtn.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local playerGui = player:WaitForChild("PlayerGui")
+local UIS = game:GetService("UserInputService")
+
+-- [Previous UI setup code remains exactly the same until the dupeBtn logic]
+
+-- Enhanced Dupe Logic with Animation Preservation
+dupeBtn.MouseButton1Click:Connect(function()
     local player = game:GetService("Players").LocalPlayer
     local backpack = player:WaitForChild("Backpack")
     local char = player.Character or player.CharacterAdded:Wait()
@@ -218,48 +227,77 @@ dupeBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    -- Create enhanced clone
+    -- Create perfect clone with animations
     local fakeClone = tool:Clone()
     
-    -- Remove ONLY placement/functional scripts
+    -- Remove ONLY unwanted functionality scripts
     for _,v in pairs(fakeClone:GetDescendants()) do
         if v:IsA("Script") or v:IsA("LocalScript") then
-            -- Keep animation and tool grip scripts
+            -- Preserve all animation-related scripts
             if not (v.Name:match("Animate")) 
                and not (v.Name:match("Animation"))
-               and not (v.Name:match("Grip")) then
+               and not (v.Name:match("Animator"))
+               and not (v.Name:match("Grip"))
+               and not (v.Name:match("Control")) then
                 v:Destroy()
             end
         end
     end
 
-    -- Configure for holding animations
+    -- Special handling for different pet types
+    if fakeClone:FindFirstChildOfClass("Humanoid") then
+        -- For humanoid pets (rigged models)
+        local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
+        
+        -- Ensure Animator exists
+        if not humanoid:FindFirstChildOfClass("Animator") then
+            Instance.new("Animator").Parent = humanoid
+        end
+        
+        -- Copy all animation tracks from original
+        local originalHumanoid = tool:FindFirstChildOfClass("Humanoid")
+        if originalHumanoid and originalHumanoid:FindFirstChildOfClass("Animator") then
+            for _,track in pairs(originalHumanoid.Animator:GetPlayingAnimationTracks()) do
+                humanoid.Animator:LoadAnimation(track.Animation):Play()
+            end
+        end
+    else
+        -- For non-humanoid pets (regular tools with animations)
+        local animateScript = fakeClone:FindFirstChild("Animate") or tool:FindFirstChild("Animate")
+        if animateScript then
+            animateScript:Clone().Parent = fakeClone
+        end
+    end
+
+    -- Configure for proper holding
     fakeClone.Enabled = true
     fakeClone.ManualActivationOnly = false
     fakeClone.RequiresHandle = true
     
-    -- Disable placement functionality
+    -- Disable unwanted functionality
     if fakeClone:FindFirstChild("CanBeDropped") then
         fakeClone.CanBeDropped = false
     end
     
-    -- Special handling for Humanoid pets
-    if fakeClone:FindFirstChildOfClass("Humanoid") then
-        -- Ensure animations will play
-        local animate = fakeClone:FindFirstChild("Animate") or Instance.new("Script")
-        animate.Name = "Animate"
-        animate.Parent = fakeClone
-    end
-
     -- Maintain original appearance
     fakeClone.Name = tool.Name
     fakeClone.Parent = backpack
 
-    -- Equip automatically (optional)
+    -- Auto-equip the duplicate
     task.wait(0.2)
     if char:FindFirstChildOfClass("Humanoid") then
         char.Humanoid:EquipTool(fakeClone)
+        
+        -- Force animations to play
+        task.wait(0.1)
+        if fakeClone:FindFirstChildOfClass("Humanoid") then
+            for _,track in pairs(fakeClone.Humanoid.Animator:GetPlayingAnimationTracks()) do
+                track:Play()
+            end
+        end
     end
     
-    print("Created holdable animated duplicate of: "..tool.Name)
+    print("Created animated duplicate of: "..tool.Name)
 end)
+
+-- [Rest of your original UI code remains exactly the same]
