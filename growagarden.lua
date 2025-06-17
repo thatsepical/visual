@@ -224,7 +224,7 @@ spawnBtn.MouseButton1Click:Connect(function()
 	print("Spawned:", petNameBox.Text, "Weight:", weightBox.Text, "Age:", ageBox.Text)
 end)
 
--- Enhanced Dupe Logic with Animation Preservation
+-- Enhanced Dupe Logic with Full Animation Preservation
 dupeBtn.MouseButton1Click:Connect(function()
     local player = game:GetService("Players").LocalPlayer
     local backpack = player:WaitForChild("Backpack")
@@ -239,34 +239,35 @@ dupeBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    -- Create perfect clone with animations
+    -- Create enhanced clone
     local fakeClone = tool:Clone()
     
-    -- Remove ONLY unwanted functionality scripts
+    -- Remove ONLY placement/functional scripts while keeping animations
     for _,v in pairs(fakeClone:GetDescendants()) do
         if v:IsA("Script") or v:IsA("LocalScript") then
-            -- Preserve all animation-related scripts
+            -- Keep all animation-related components
             if not (v.Name:match("Animate")) 
                and not (v.Name:match("Animation"))
                and not (v.Name:match("Animator"))
                and not (v.Name:match("Grip"))
-               and not (v.Name:match("Control")) then
+               and not (v.Name:match("Control"))
+               and not (v.Name:match("Motor")) then
                 v:Destroy()
             end
         end
     end
 
-    -- Special handling for different pet types
+    -- Special animation handling
     if fakeClone:FindFirstChildOfClass("Humanoid") then
-        -- For humanoid pets (rigged models)
+        -- For rigged pets with Humanoids
         local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
         
-        -- Ensure Animator exists
+        -- Ensure animator exists
         if not humanoid:FindFirstChildOfClass("Animator") then
             Instance.new("Animator").Parent = humanoid
         end
         
-        -- Copy all animation tracks from original
+        -- Copy all animations from original
         local originalHumanoid = tool:FindFirstChildOfClass("Humanoid")
         if originalHumanoid and originalHumanoid:FindFirstChildOfClass("Animator") then
             for _,track in pairs(originalHumanoid.Animator:GetPlayingAnimationTracks()) do
@@ -274,19 +275,27 @@ dupeBtn.MouseButton1Click:Connect(function()
             end
         end
     else
-        -- For non-humanoid pets (regular tools with animations)
-        local animateScript = fakeClone:FindFirstChild("Animate") or tool:FindFirstChild("Animate")
+        -- For regular Tool pets
+        -- Copy animation controller if exists
+        local animateScript = tool:FindFirstChild("Animate") 
         if animateScript then
             animateScript:Clone().Parent = fakeClone
         end
+        
+        -- Copy all animation objects
+        for _,anim in pairs(tool:GetDescendants()) do
+            if anim:IsA("Animation") then
+                anim:Clone().Parent = fakeClone
+            end
+        end
     end
 
-    -- Configure for proper holding
+    -- Configure for proper animation
     fakeClone.Enabled = true
     fakeClone.ManualActivationOnly = false
     fakeClone.RequiresHandle = true
     
-    -- Disable unwanted functionality
+    -- Disable placement if needed
     if fakeClone:FindFirstChild("CanBeDropped") then
         fakeClone.CanBeDropped = false
     end
@@ -295,12 +304,12 @@ dupeBtn.MouseButton1Click:Connect(function()
     fakeClone.Name = tool.Name
     fakeClone.Parent = backpack
 
-    -- Auto-equip the duplicate
+    -- Auto-equip to see animations
     task.wait(0.2)
     if char:FindFirstChildOfClass("Humanoid") then
         char.Humanoid:EquipTool(fakeClone)
         
-        -- Force animations to play
+        -- Force animations to start
         task.wait(0.1)
         if fakeClone:FindFirstChildOfClass("Humanoid") then
             for _,track in pairs(fakeClone.Humanoid.Animator:GetPlayingAnimationTracks()) do
