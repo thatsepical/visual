@@ -125,11 +125,35 @@ local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.0
 local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.2, 0))
 local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.35, 0))
 
-for _, box in pairs({weightBox, ageBox}) do
-	box:GetPropertyChangedSignal("Text"):Connect(function()
-		box.Text = box.Text:gsub("%D", "")
-	end)
+-- Decimal number validation
+local function validateDecimalInput(textBox)
+    textBox:GetPropertyChangedSignal("Text"):Connect(function()
+        -- Allow numbers and single decimal point
+        local newText = textBox.Text:gsub("[^%d.]", "")
+        
+        -- Ensure only one decimal point exists
+        local decimalCount = select(2, newText:gsub("%.", ""))
+        if decimalCount > 1 then
+            -- If multiple decimals, keep only the first one
+            local parts = {}
+            for part in newText:gmatch("[^.]+") do
+                table.insert(parts, part)
+            end
+            newText = parts[1].."."..(parts[2] or "")
+        end
+        
+        -- Don't allow decimal point at start
+        if newText:sub(1,1) == "." then
+            newText = "0"..newText
+        end
+        
+        textBox.Text = newText
+    end)
 end
+
+-- Apply decimal validation
+validateDecimalInput(weightBox)
+validateDecimalInput(ageBox)
 
 -- Helper: Create Button
 local function createButton(parent, text, posY)
