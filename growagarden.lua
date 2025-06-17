@@ -205,14 +205,7 @@ end)
 
 -- Dupe Logic (works if holding a valid Tool)
 dupeBtn.MouseButton1Click:Connect(function()
-    local player = game.Players.LocalPlayer
-local backpack = player:WaitForChild("Backpack")
-local playerGui = player:WaitForChild("PlayerGui")
-local UIS = game:GetService("UserInputService")
-
--- [Previous UI setup code remains exactly the same until the dupeBtn logic]
-
--- Enhanced Dupe Logic with Animation Preservation
+    -- Enhanced Dupe Logic with Animation Preservation
 dupeBtn.MouseButton1Click:Connect(function()
     local player = game:GetService("Players").LocalPlayer
     local backpack = player:WaitForChild("Backpack")
@@ -299,5 +292,3 @@ dupeBtn.MouseButton1Click:Connect(function()
     
     print("Created animated duplicate of: "..tool.Name)
 end)
-
--- [Rest of your original UI code remains exactly the same]
