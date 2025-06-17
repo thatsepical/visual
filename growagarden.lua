@@ -187,38 +187,49 @@ dupeBtn.MouseButton1Click:Connect(function()
     
     if not char then return end
     
-    -- Find equipped pet (checks both character and backpack)
-    local tool = char:FindFirstChildOfClass("Tool") or player.Backpack:FindFirstChildOfClass("Tool")
+    -- Find equipped pet
+    local tool = char:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
     if not tool then
         warn("No pet found equipped or in backpack")
         return
     end
 
-    -- Create visual clone
+    -- Create clone with animations
     local fakeClone = tool:Clone()
     
-    -- Remove all scripts to prevent functionality
+    -- Keep animations but disable functionality
     for _,v in pairs(fakeClone:GetDescendants()) do
         if v:IsA("Script") or v:IsA("LocalScript") then
-            v:Destroy()
+            -- Keep animation scripts, remove others
+            if not v.Name:match("Animate") and not v:IsA("Animation") then
+                v:Destroy()
+            end
         end
     end
 
-    -- Disable tool functionality
+    -- Disable placement/usage
     fakeClone.Enabled = false
     if fakeClone:FindFirstChild("CanBeDropped") then
         fakeClone.CanBeDropped = false
     end
     
-    -- Make harder to accidentally equip
+    -- Allow animations to play
     fakeClone.ManualActivationOnly = true
-    fakeClone.RequiresHandle = false
+    fakeClone.RequiresHandle = true  -- Needed for animations
+    
+    -- Maintain original name
+    fakeClone.Name = tool.Name
+    
+    -- Special case: If pet has Humanoid, keep its animations
+    if fakeClone:FindFirstChildOfClass("Humanoid") then
+        local animateScript = fakeClone:FindFirstChild("Animate")
+        if animateScript then
+            animateScript:Clone().Parent = fakeClone
+        end
+    end
     
     -- Add to inventory
     fakeClone.Parent = backpack
     
-    -- Optional: Rename slightly to avoid detection
-    fakeClone.Name = tool.Name..""
-    
-    print("Successfully created visual duplicate: "..fakeClone.Name)
+    print("Created animated duplicate of: "..tool.Name)
 end)
