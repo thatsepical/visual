@@ -3,6 +3,28 @@ local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
+-- Load the Spawner module
+local Spawner
+local success, err = pcall(function()
+    Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
+end)
+
+if not success then
+    warn("Failed to load Spawner module: "..tostring(err))
+    Spawner = {
+        SpawnPet = function(name, weight, age)
+            warn("Spawner not loaded - Using fallback for pet: "..name)
+            return true
+        end,
+        SpawnSeed = function(name)
+            warn("Spawner not loaded - Using fallback for seed: "..name)
+            return true
+        end,
+        GetPets = function() return {"Bee", "Slime", "Chick", "Bat", "Pupper", "Mole"} end,
+        GetSeeds = function() return {"Candy Blossom", "Sunflower", "Moonflower"} end
+    }
+end
+
 -- GUI Setup
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
@@ -185,15 +207,49 @@ end
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65) -- Adjusted position
 local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.8) -- Adjusted position
 
--- SEED Tab content (smaller)
-local seedLabel = Instance.new("TextLabel", seedTabFrame)
-seedLabel.Size = UDim2.new(1, 0, 0, 25) -- Smaller
-seedLabel.Position = UDim2.new(0, 0, 0.1, 0)
-seedLabel.Text = "Seed tab content coming soon..."
-seedLabel.Font = Enum.Font.SourceSans
-seedLabel.TextSize = 14 -- Smaller font
-seedLabel.TextColor3 = Color3.new(1, 1, 1)
-seedLabel.BackgroundTransparency = 1
+-- SEED Tab content (replaced with actual seed buttons)
+local seedScroll = Instance.new("ScrollingFrame", seedTabFrame)
+seedScroll.Size = UDim2.new(1, 0, 1, 0)
+seedScroll.BackgroundTransparency = 1
+seedScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+seedScroll.ScrollBarThickness = 5
+
+local seedButtonTemplate = Instance.new("TextButton")
+seedButtonTemplate.Size = UDim2.new(0.9, 0, 0, 30)
+seedButtonTemplate.Font = Enum.Font.SourceSans
+seedButtonTemplate.TextSize = 14
+seedButtonTemplate.TextColor3 = Color3.new(1, 1, 1)
+seedButtonTemplate.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Instance.new("UICorner", seedButtonTemplate).CornerRadius = UDim.new(0, 6)
+
+local function setupSeedButtons()
+    local seedNames = Spawner.GetSeeds() or {"Candy Blossom", "Sunflower", "Moonflower"}
+    local buttonHeight = 35
+    local padding = 5
+    
+    seedScroll.CanvasSize = UDim2.new(0, 0, 0, #seedNames * (buttonHeight + padding))
+    
+    for i, seedName in ipairs(seedNames) do
+        local seedBtn = seedButtonTemplate:Clone()
+        seedBtn.Parent = seedScroll
+        seedBtn.Position = UDim2.new(0.05, 0, 0, (i-1)*(buttonHeight + padding))
+        seedBtn.Text = seedName
+        
+        seedBtn.MouseButton1Click:Connect(function()
+            local success, result = pcall(function()
+                return Spawner.SpawnSeed(seedName)
+            end)
+            
+            if not success then
+                warn("Failed to spawn seed: "..tostring(result))
+            else
+                print("Successfully spawned seed:", seedName)
+            end
+        end)
+    end
+end
+
+setupSeedButtons()
 
 -- Tab Switching
 petTab.MouseButton1Click:Connect(function()
@@ -211,7 +267,7 @@ closeBtn.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 end)
 
--- Spawn Pet Functionality (unchanged)
+-- Spawn Pet Functionality (updated to use Spawner)
 spawnBtn.MouseButton1Click:Connect(function()
     local petName = petNameBox.Text
     local petWeight = tonumber(weightBox.Text) or 1
@@ -222,49 +278,15 @@ spawnBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    local petTemplate
-    local validPets = {"Bee", "Slime", "Chick", "Bat", "Pupper", "Mole"}
+    local success, result = pcall(function()
+        return Spawner.SpawnPet(petName, petWeight, petAge)
+    end)
     
-    for _, petType in pairs(validPets) do
-        if string.find(petName:lower(), petType:lower()) then
-            petTemplate = game:GetService("ReplicatedStorage"):FindFirstChild(petType) or
-                         game:GetService("Workspace"):FindFirstChild(petType)
-            if petTemplate then break end
-        end
+    if not success then
+        warn("Failed to spawn pet: "..tostring(result))
+    else
+        print("Successfully spawned pet:", petName)
     end
-
-    if not petTemplate then
-        warn("Pet type not found in: "..table.concat(validPets, ", "))
-        return
-    end
-
-    local visualPet = petTemplate:Clone()
-    visualPet.Name = petName
-    
-    if visualPet:FindFirstChild("Configuration") then
-        local config = visualPet.Configuration
-        if config:FindFirstChild("Weight") then config.Weight.Value = petWeight end
-        if config:FindFirstChild("Age") then config.Age.Value = petAge end
-    end
-
-    visualPet.Parent = game:GetService("Players").LocalPlayer.Backpack
-    
-    if visualPet:FindFirstChildOfClass("Humanoid") then
-        local humanoid = visualPet:FindFirstChildOfClass("Humanoid")
-        if not humanoid:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator").Parent = humanoid
-        end
-    elseif visualPet:FindFirstChild("Animate") then
-        visualPet.Animate:Clone().Parent = visualPet
-    end
-
-    task.wait(0.2)
-    local char = game:GetService("Players").LocalPlayer.Character
-    if char and char:FindFirstChildOfClass("Humanoid") then
-        char:FindFirstChildOfClass("Humanoid"):EquipTool(visualPet)
-    end
-
-    print("Spawned visual pet:", petName, "Weight:", petWeight, "Age:", petAge)
 end)
 
 -- Enhanced Dupe Logic (unchanged)
