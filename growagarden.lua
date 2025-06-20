@@ -3,26 +3,8 @@ local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner
-local success, err = pcall(function()
-    Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua", true))()
-end)
-
-if not success then
-    warn("Failed to load Spawner module: "..tostring(err))
-    Spawner = {
-        SpawnPet = function(name, weight, age)
-            warn("Spawner not loaded - Using fallback for pet: "..name)
-            return true
-        end,
-        SpawnSeed = function(name)
-            warn("Spawner not loaded - Using fallback for seed: "..name)
-            return true
-        end,
-        GetPets = function() return {"Bee", "Slime", "Chick", "Bat", "Pupper", "Mole"} end,
-        GetSeeds = function() return {"Candy Blossom", "Sunflower", "Moonflower"} end
-    }
-end
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
+getgenv().Executed = nil
 
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
@@ -34,7 +16,7 @@ local uiScale = isPC and 1.15 or 1
 local toggleButton = Instance.new("TextButton", screenGui)
 toggleButton.Size = UDim2.new(0, 80 * uiScale, 0, 25 * uiScale)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.Text = "Open UI"
+toggleButton.Text = "Toggle UI"
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 14
 toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -47,7 +29,7 @@ mainFrame.Position = UDim2.new(0.5, -125 * uiScale, 0.5, -140 * uiScale)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
-mainFrame.Visible = false
+mainFrame.Visible = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
 local dragging, dragInput, dragStart, startPos
@@ -87,10 +69,20 @@ header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
+local versionText = Instance.new("TextLabel", header)
+versionText.Text = "v1.2.0"
+versionText.Size = UDim2.new(0, 40, 0, 12)
+versionText.Position = UDim2.new(0, 5, 0, 5)
+versionText.Font = Enum.Font.SourceSans
+versionText.TextSize = 10
+versionText.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+versionText.BackgroundTransparency = 1
+versionText.TextXAlignment = Enum.TextXAlignment.Left
+
 local title = Instance.new("TextLabel", header)
 title.Text = "PET/SEED SPAWNER"
-title.Size = UDim2.new(1, 0, 0, 20)
-title.Position = UDim2.new(0, 0, 0, 5)
+title.Size = UDim2.new(1, -50, 0, 20)
+title.Position = UDim2.new(0, 45, 0, 5)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 16
 title.TextColor3 = Color3.new(1, 1, 1)
@@ -174,6 +166,9 @@ local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.0
 local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.25, 0))
 local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.45, 0))
 
+local seedNameBox = createTextBox(seedTabFrame, "Seed Name", UDim2.new(0.05, 0, 0.05, 0))
+local amountBox = createTextBox(seedTabFrame, "Amount", UDim2.new(0.05, 0, 0.25, 0))
+
 local function validateDecimalInput(textBox)
     textBox:GetPropertyChangedSignal("Text"):Connect(function()
         local newText = textBox.Text:gsub("[^%d.]", "")
@@ -194,6 +189,7 @@ end
 
 validateDecimalInput(weightBox)
 validateDecimalInput(ageBox)
+validateDecimalInput(amountBox)
 
 local function createButton(parent, text, posY)
     local btn = Instance.new("TextButton", parent)
@@ -210,66 +206,7 @@ end
 
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65)
 local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.8)
-
-local seedScroll = Instance.new("ScrollingFrame", seedTabFrame)
-seedScroll.Size = UDim2.new(1, 0, 1, 0)
-seedScroll.BackgroundTransparency = 1
-seedScroll.ScrollBarThickness = 6
-seedScroll.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-seedScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-
-local seedListLayout = Instance.new("UIListLayout", seedScroll)
-seedListLayout.Padding = UDim.new(0, 5)
-seedListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-seedListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    seedScroll.CanvasSize = UDim2.new(0, 0, 0, seedListLayout.AbsoluteContentSize.Y + 10)
-end)
-
-local seedButtonTemplate = Instance.new("TextButton")
-seedButtonTemplate.Size = UDim2.new(0.9, 0, 0, 30)
-seedButtonTemplate.Position = UDim2.new(0.05, 0, 0, 0)
-seedButtonTemplate.Font = Enum.Font.SourceSans
-seedButtonTemplate.TextSize = 14
-seedButtonTemplate.TextColor3 = Color3.new(1, 1, 1)
-seedButtonTemplate.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-seedButtonTemplate.AutoButtonColor = true
-Instance.new("UICorner", seedButtonTemplate).CornerRadius = UDim.new(0, 6)
-
-local function setupSeedButtons()
-    local seedNames = Spawner.GetSeeds() or {"Candy Blossom", "Sunflower", "Moonflower"}
-    
-    for _, child in ipairs(seedScroll:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
-    end
-    
-    for _, seedName in ipairs(seedNames) do
-        local seedBtn = seedButtonTemplate:Clone()
-        seedBtn.Parent = seedScroll
-        seedBtn.Text = seedName
-        seedBtn.LayoutOrder = _
-        
-        seedBtn.MouseButton1Click:Connect(function()
-            local success, result = pcall(function()
-                local spawned = Spawner.SpawnSeed(seedName)
-                if not spawned then
-                    error("Failed to spawn seed")
-                end
-                return spawned
-            end)
-            
-            if not success then
-                warn("Failed to spawn seed: "..tostring(result))
-            else
-                print("Successfully spawned seed:", seedName)
-            end
-        end)
-    end
-end
-
-setupSeedButtons()
+local spawnSeedBtn = createButton(seedTabFrame, "SPAWN SEED", 0.45)
 
 local function switchToTab(tab)
     if tab == "pet" then
@@ -329,6 +266,32 @@ spawnBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+spawnSeedBtn.MouseButton1Click:Connect(function()
+    local seedName = seedNameBox.Text
+    local amount = tonumber(amountBox.Text) or 1
+    
+    if not seedName or string.len(seedName) < 2 then
+        warn("Please enter a valid seed name")
+        return
+    end
+
+    local success, result = pcall(function()
+        for i = 1, amount do
+            local spawned = Spawner.SpawnSeed(seedName)
+            if not spawned then
+                error("Failed to spawn seed")
+            end
+        end
+        return true
+    end)
+    
+    if not success then
+        warn("Failed to spawn seed: "..tostring(result))
+    else
+        print("Successfully spawned "..amount.." "..seedName..(amount > 1 and "s" or ""))
+    end
+end)
+
 dupeBtn.MouseButton1Click:Connect(function()
     local tool = player.Character and player.Character:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
     
@@ -338,69 +301,14 @@ dupeBtn.MouseButton1Click:Connect(function()
     end
 
     local fakeClone = tool:Clone()
-    
-    for _,v in pairs(fakeClone:GetDescendants()) do
-        if v:IsA("Script") or v:IsA("LocalScript") then
-            if not (v.Name:match("Animate")) 
-               and not (v.Name:match("Animation"))
-               and not (v.Name:match("Animator"))
-               and not (v.Name:match("Grip"))
-               and not (v.Name:match("Control"))
-               and not (v.Name:match("Motor")) then
-                v:Destroy()
-            end
-        end
-    end
-
-    if fakeClone:FindFirstChildOfClass("Humanoid") then
-        local humanoid = fakeClone:FindFirstChildOfClass("Humanoid")
-        if not humanoid:FindFirstChildOfClass("Animator") then
-            Instance.new("Animator").Parent = humanoid
-        end
-        
-        local originalHumanoid = tool:FindFirstChildOfClass("Humanoid")
-        if originalHumanoid and originalHumanoid:FindFirstChildOfClass("Animator") then
-            for _,track in pairs(originalHumanoid.Animator:GetPlayingAnimationTracks()) do
-                humanoid.Animator:LoadAnimation(track.Animation):Play()
-            end
-        end
-    else
-        local animateScript = tool:FindFirstChild("Animate") 
-        if animateScript then
-            animateScript:Clone().Parent = fakeClone
-        end
-        
-        for _,anim in pairs(tool:GetDescendants()) do
-            if anim:IsA("Animation") then
-                anim:Clone().Parent = fakeClone
-            end
-        end
-    end
-
-    fakeClone.Enabled = true
-    fakeClone.ManualActivationOnly = false
-    fakeClone.RequiresHandle = true
-    
-    if fakeClone:FindFirstChild("CanBeDropped") then
-        fakeClone.CanBeDropped = false
-    end
-    
-    fakeClone.Name = tool.Name
     fakeClone.Parent = backpack
-
+    
     task.wait(0.2)
     if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
         player.Character.Humanoid:EquipTool(fakeClone)
-        
-        task.wait(0.1)
-        if fakeClone:FindFirstChildOfClass("Humanoid") then
-            for _,track in pairs(fakeClone.Humanoid.Animator:GetPlayingAnimationTracks()) do
-                track:Play()
-            end
-        end
     end
     
-    print("Created animated duplicate of: "..tool.Name)
+    print("Created duplicate of: "..tool.Name)
 end)
 
 switchToTab("pet")
