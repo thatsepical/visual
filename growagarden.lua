@@ -3,30 +3,36 @@ local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
--- Add error handling for loading the spawner
-local Spawner
-local success, result = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua", true))()
-end)
+local Spawner = {
+    SpawnPet = function(name, weight, age)
+        warn("Spawner not properly initialized - cannot spawn pets")
+        return false
+    end,
+    SpawnSeed = function(name)
+        warn("Spawner not properly initialized - cannot spawn seeds")
+        return false
+    end
+}
 
-if success then
-    Spawner = result
-    getgenv().Executed = nil
-    print("GardenSpawner loaded successfully!")
-else
-    warn("Failed to load GardenSpawner: "..tostring(result))
-    -- Create a dummy Spawner with empty functions to prevent errors
-    Spawner = {
-        SpawnPet = function() 
-            warn("Spawner not loaded properly - cannot spawn pets") 
-            return false 
-        end,
-        SpawnSeed = function() 
-            warn("Spawner not loaded properly - cannot spawn seeds") 
-            return false 
-        end
-    }
+local function loadSpawner()
+    local success, result = pcall(function()
+        local url = "https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"
+        local script = game:HttpGet(url, true)
+        return loadstring(script)()
+    end)
+    
+    if success and result and result.SpawnPet and result.SpawnSeed then
+        Spawner = result
+        getgenv().Executed = nil
+        print("GardenSpawner loaded successfully!")
+        return true
+    else
+        warn("Failed to load GardenSpawner: "..tostring(result))
+        return false
+    end
 end
+
+loadSpawner()
 
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
@@ -266,19 +272,21 @@ spawnBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    local success, result = pcall(function()
-        local spawned = Spawner.SpawnPet(petName, petWeight, petAge)
-        if not spawned then
-            error("Failed to spawn pet")
+    if not Spawner or not Spawner.SpawnPet then
+        if not loadSpawner() then
+            warn("Spawner system still not available")
+            return
         end
-        return spawned
+    end
+
+    local success, result = pcall(function()
+        return Spawner.SpawnPet(petName, petWeight, petAge)
     end)
     
-    if not success then
+    if not success or not result then
         warn("Failed to spawn pet: "..tostring(result))
     else
         print("Successfully spawned pet:", petName)
-        
         if isPC and result and typeof(result) == "Instance" then
             task.wait(0.2)
             if player.Character and player.Character:FindFirstChild("Humanoid") then
@@ -297,10 +305,16 @@ spawnSeedBtn.MouseButton1Click:Connect(function()
         return
     end
 
+    if not Spawner or not Spawner.SpawnSeed then
+        if not loadSpawner() then
+            warn("Spawner system still not available")
+            return
+        end
+    end
+
     local success, result = pcall(function()
         for i = 1, amount do
-            local spawned = Spawner.SpawnSeed(seedName)
-            if not spawned then
+            if not Spawner.SpawnSeed(seedName) then
                 error("Failed to spawn seed")
             end
         end
