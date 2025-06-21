@@ -15,7 +15,7 @@ if not Spawner then
 end
 
 if not Spawner then
-    warn("[SpawnerUI] ❌ GardenSpawner.lua failed to load.")
+    warn("Spawner Error: Could not load the pet spawner! Try again later.")
     return
 end
 
