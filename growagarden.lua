@@ -64,7 +64,7 @@ header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel", header)
-versionText.Text = "v1.4.0"
+versionText.Text = "v1.6.0"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
