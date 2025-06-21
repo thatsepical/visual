@@ -2,10 +2,13 @@ local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/main/GardenSpawner.lua"))()
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua", true))()
+
+local availablePets = Spawner.GetPets()
+local availableSeeds = Spawner.GetSeeds()
 
 local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "PetSpawnerUI"
+screenGui.Name = "AdvancedSpawnerUI"
 screenGui.ResetOnSpawn = false
 
 local isPC = UIS.MouseEnabled
@@ -64,7 +67,7 @@ header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel", header)
-versionText.Text = "v1.6.0"
+versionText.Text = "v1.5.0"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
@@ -74,7 +77,7 @@ versionText.BackgroundTransparency = 1
 versionText.TextXAlignment = Enum.TextXAlignment.Left
 
 local title = Instance.new("TextLabel", header)
-title.Text = "PET/SEED SPAWNER"
+title.Text = "PET/SEED/EGG SPAWNER"
 title.Size = UDim2.new(1, -10, 0, 20)
 title.Position = UDim2.new(0, 5, 0, 5)
 title.Font = Enum.Font.SourceSansBold
@@ -102,7 +105,7 @@ Instance.new("UICorner", tabBackground).CornerRadius = UDim.new(0, 4)
 
 local petTab = Instance.new("TextButton", tabBackground)
 petTab.Text = "PET"
-petTab.Size = UDim2.new(0.5, -2, 1, 0)
+petTab.Size = UDim2.new(0.33, -2, 1, 0)
 petTab.Position = UDim2.new(0, 0, 0, 0)
 petTab.Font = Enum.Font.SourceSans
 petTab.TextColor3 = Color3.new(1, 1, 1)
@@ -113,14 +116,25 @@ Instance.new("UICorner", petTab).CornerRadius = UDim.new(0, 4)
 
 local seedTab = Instance.new("TextButton", tabBackground)
 seedTab.Text = "SEED"
-seedTab.Size = UDim2.new(0.5, -2, 1, 0)
-seedTab.Position = UDim2.new(0.5, 0, 0, 0)
+seedTab.Size = UDim2.new(0.33, -2, 1, 0)
+seedTab.Position = UDim2.new(0.33, 0, 0, 0)
 seedTab.Font = Enum.Font.SourceSans
 seedTab.TextColor3 = Color3.new(1, 1, 1)
 seedTab.TextSize = 14
 seedTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 seedTab.BorderSizePixel = 0
 Instance.new("UICorner", seedTab).CornerRadius = UDim.new(0, 4)
+
+local eggTab = Instance.new("TextButton", tabBackground)
+eggTab.Text = "EGG"
+eggTab.Size = UDim2.new(0.33, -2, 1, 0)
+eggTab.Position = UDim2.new(0.66, 0, 0, 0)
+eggTab.Font = Enum.Font.SourceSans
+eggTab.TextColor3 = Color3.new(1, 1, 1)
+eggTab.TextSize = 14
+eggTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+eggTab.BorderSizePixel = 0
+Instance.new("UICorner", eggTab).CornerRadius = UDim.new(0, 4)
 
 local closeBtn = Instance.new("TextButton", header)
 closeBtn.Size = UDim2.new(0, 25, 0, 25)
@@ -143,6 +157,12 @@ seedTabFrame.Size = UDim2.new(1, 0, 1, -55)
 seedTabFrame.BackgroundTransparency = 1
 seedTabFrame.Visible = false
 
+local eggTabFrame = Instance.new("Frame", mainFrame)
+eggTabFrame.Position = UDim2.new(0, 0, 0, 55)
+eggTabFrame.Size = UDim2.new(1, 0, 1, -55)
+eggTabFrame.BackgroundTransparency = 1
+eggTabFrame.Visible = false
+
 local function createTextBox(parent, placeholder, position)
     local box = Instance.new("TextBox", parent)
     box.Size = UDim2.new(0.9, 0, 0, 25)
@@ -164,6 +184,9 @@ local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.45, 0))
 
 local seedNameBox = createTextBox(seedTabFrame, "Seed Name", UDim2.new(0.05, 0, 0.05, 0))
 local amountBox = createTextBox(seedTabFrame, "Amount", UDim2.new(0.05, 0, 0.25, 0))
+
+local eggNameBox = createTextBox(eggTabFrame, "Egg Name", UDim2.new(0.05, 0, 0.05, 0))
+local spinBox = createTextBox(eggTabFrame, "Plant to Spin", UDim2.new(0.05, 0, 0.25, 0))
 
 local function validateDecimalInput(textBox)
     textBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -202,6 +225,8 @@ end
 
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65)
 local spawnSeedBtn = createButton(seedTabFrame, "SPAWN SEED", 0.45)
+local spawnEggBtn = createButton(eggTabFrame, "SPAWN EGG", 0.45)
+local spinBtn = createButton(eggTabFrame, "SPIN PLANT", 0.65)
 
 local function spawnPet()
     local petName = petNameBox.Text
@@ -222,21 +247,33 @@ local function spawnSeed()
     Spawner.SpawnSeed(seedName, amount)
 end
 
+local function spawnEgg()
+    local eggName = eggNameBox.Text
+    if eggName == "" then return end
+    
+    Spawner.SpawnEgg(eggName)
+end
+
+local function spinPlant()
+    local plantName = spinBox.Text
+    if plantName == "" then return end
+    
+    Spawner.Spin(plantName)
+end
+
 spawnBtn.MouseButton1Click:Connect(spawnPet)
 spawnSeedBtn.MouseButton1Click:Connect(spawnSeed)
+spawnEggBtn.MouseButton1Click:Connect(spawnEgg)
+spinBtn.MouseButton1Click:Connect(spinPlant)
 
 local function switchToTab(tab)
-    if tab == "pet" then
-        petTabFrame.Visible = true
-        seedTabFrame.Visible = false
-        petTab.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-        seedTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    else
-        petTabFrame.Visible = false
-        seedTabFrame.Visible = true
-        petTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        seedTab.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    end
+    petTabFrame.Visible = (tab == "pet")
+    seedTabFrame.Visible = (tab == "seed")
+    eggTabFrame.Visible = (tab == "egg")
+    
+    petTab.BackgroundColor3 = (tab == "pet") and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
+    seedTab.BackgroundColor3 = (tab == "seed") and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
+    eggTab.BackgroundColor3 = (tab == "egg") and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
 end
 
 petTab.MouseButton1Click:Connect(function()
@@ -245,6 +282,10 @@ end)
 
 seedTab.MouseButton1Click:Connect(function()
     switchToTab("seed")
+end)
+
+eggTab.MouseButton1Click:Connect(function()
+    switchToTab("egg")
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
