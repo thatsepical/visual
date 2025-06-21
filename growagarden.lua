@@ -3,6 +3,9 @@ local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"))()
+getgenv().Executed = nil
+
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
 screenGui.ResetOnSpawn = false
@@ -29,7 +32,6 @@ mainFrame.Active = true
 mainFrame.Visible = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
--- Dragging functionality
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -68,7 +70,7 @@ header.BorderSizePixel = 0
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel", header)
-versionText.Text = "v1.2.0"
+versionText.Text = "v1.4.0"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
@@ -232,21 +234,69 @@ closeBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
 end)
 
--- Modified button functions (no spawning, just UI feedback)
 spawnBtn.MouseButton1Click:Connect(function()
-    warn("[UI] Spawning disabled (Spawner module missing).")
+    local petName = petNameBox.Text
+    local petWeight = tonumber(weightBox.Text) or 1
+    local petAge = tonumber(ageBox.Text) or 1
+    
+    if not petName or string.len(petName) < 2 then
+        warn("Please enter a valid pet name")
+        return
+    end
+
+    local success, result = pcall(function()
+        local spawned = Spawner.SpawnPet(petName, petWeight, petAge)
+        if not spawned then
+            error("Failed to spawn pet")
+        end
+        return spawned
+    end)
+    
+    if not success then
+        warn("Failed to spawn pet: "..tostring(result))
+    else
+        print("Successfully spawned pet:", petName)
+        
+        if isPC and result and typeof(result) == "Instance" then
+            task.wait(0.2)
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid:EquipTool(result)
+            end
+        end
+    end
 end)
 
 spawnSeedBtn.MouseButton1Click:Connect(function()
-    warn("[UI] Spawning disabled (Spawner module missing).")
+    local seedName = seedNameBox.Text
+    local amount = tonumber(amountBox.Text) or 1
+    
+    if not seedName or string.len(seedName) < 2 then
+        warn("Please enter a valid seed name")
+        return
+    end
+
+    local success, result = pcall(function()
+        for i = 1, amount do
+            local spawned = Spawner.SpawnSeed(seedName)
+            if not spawned then
+                error("Failed to spawn seed")
+            end
+        end
+        return true
+    end)
+    
+    if not success then
+        warn("Failed to spawn seed: "..tostring(result))
+    else
+        print("Successfully spawned "..amount.." "..seedName..(amount > 1 and "s" or ""))
+    end
 end)
 
--- Dupe button still works (clones tools, but won't create real pets)
 dupeBtn.MouseButton1Click:Connect(function()
     local tool = player.Character and player.Character:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
     
     if not tool then
-        warn("No tool found equipped or in backpack")
+        warn("No pet found equipped or in backpack")
         return
     end
 
@@ -258,7 +308,7 @@ dupeBtn.MouseButton1Click:Connect(function()
         player.Character.Humanoid:EquipTool(fakeClone)
     end
     
-    print("Duplicated tool: "..tool.Name)
+    print("Created duplicate of: "..tool.Name)
 end)
 
 switchToTab("pet")
