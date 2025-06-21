@@ -3,8 +3,30 @@ local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"))()
-getgenv().Executed = nil
+-- Add error handling for loading the spawner
+local Spawner
+local success, result = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua", true))()
+end)
+
+if success then
+    Spawner = result
+    getgenv().Executed = nil
+    print("GardenSpawner loaded successfully!")
+else
+    warn("Failed to load GardenSpawner: "..tostring(result))
+    -- Create a dummy Spawner with empty functions to prevent errors
+    Spawner = {
+        SpawnPet = function() 
+            warn("Spawner not loaded properly - cannot spawn pets") 
+            return false 
+        end,
+        SpawnSeed = function() 
+            warn("Spawner not loaded properly - cannot spawn seeds") 
+            return false 
+        end
+    }
+end
 
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
