@@ -1,38 +1,8 @@
 local player = game:GetService("Players").LocalPlayer
-local backpack = player:WaitForChild("Backpack")
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = {
-    SpawnPet = function(name, weight, age)
-        warn("Spawner not properly initialized - cannot spawn pets")
-        return false
-    end,
-    SpawnSeed = function(name)
-        warn("Spawner not properly initialized - cannot spawn seeds")
-        return false
-    end
-}
-
-local function loadSpawner()
-    local success, result = pcall(function()
-        local url = "https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"
-        local script = game:HttpGet(url, true)
-        return loadstring(script)()
-    end)
-    
-    if success and result and result.SpawnPet and result.SpawnSeed then
-        Spawner = result
-        getgenv().Executed = nil
-        print("GardenSpawner loaded successfully!")
-        return true
-    else
-        warn("Failed to load GardenSpawner: "..tostring(result))
-        return false
-    end
-end
-
-loadSpawner()
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/main/GardenSpawner.lua"))()
 
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "PetSpawnerUI"
@@ -87,10 +57,6 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
-toggleButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-end)
-
 local header = Instance.new("Frame", mainFrame)
 header.Size = UDim2.new(1, 0, 0, 40)
 header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -109,21 +75,23 @@ versionText.TextXAlignment = Enum.TextXAlignment.Left
 
 local title = Instance.new("TextLabel", header)
 title.Text = "PET/SEED SPAWNER"
-title.Size = UDim2.new(1, -50, 0, 20)
-title.Position = UDim2.new(0, 45, 0, 5)
+title.Size = UDim2.new(1, -10, 0, 20)
+title.Position = UDim2.new(0, 5, 0, 5)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 16
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Center
 
 local credit = Instance.new("TextLabel", header)
 credit.Text = "by @zenxq"
-credit.Size = UDim2.new(1, 0, 0, 12)
-credit.Position = UDim2.new(0, 0, 0, 22)
+credit.Size = UDim2.new(1, -10, 0, 12)
+credit.Position = UDim2.new(0, 5, 0, 22)
 credit.Font = Enum.Font.SourceSans
 credit.TextSize = 10
 credit.TextColor3 = Color3.new(0.8, 0.8, 0.8)
 credit.BackgroundTransparency = 1
+credit.TextXAlignment = Enum.TextXAlignment.Center
 
 local tabBackground = Instance.new("Frame", header)
 tabBackground.Size = UDim2.new(1, 0, 0, 20)
@@ -233,8 +201,29 @@ local function createButton(parent, text, posY)
 end
 
 local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65)
-local dupeBtn = createButton(petTabFrame, "DUPE PET", 0.8)
 local spawnSeedBtn = createButton(seedTabFrame, "SPAWN SEED", 0.45)
+
+local function spawnPet()
+    local petName = petNameBox.Text
+    local weight = tonumber(weightBox.Text) or 1
+    local age = tonumber(ageBox.Text) or 1
+    
+    if petName == "" then return end
+    
+    Spawner.SpawnPet(petName, weight, age)
+end
+
+local function spawnSeed()
+    local seedName = seedNameBox.Text
+    local amount = tonumber(amountBox.Text) or 1
+    
+    if seedName == "" then return end
+    
+    Spawner.SpawnSeed(seedName, amount)
+end
+
+spawnBtn.MouseButton1Click:Connect(spawnPet)
+spawnSeedBtn.MouseButton1Click:Connect(spawnSeed)
 
 local function switchToTab(tab)
     if tab == "pet" then
@@ -262,89 +251,8 @@ closeBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
 end)
 
-spawnBtn.MouseButton1Click:Connect(function()
-    local petName = petNameBox.Text
-    local petWeight = tonumber(weightBox.Text) or 1
-    local petAge = tonumber(ageBox.Text) or 1
-    
-    if not petName or string.len(petName) < 2 then
-        warn("Please enter a valid pet name")
-        return
-    end
-
-    if not Spawner or not Spawner.SpawnPet then
-        if not loadSpawner() then
-            warn("Spawner system still not available")
-            return
-        end
-    end
-
-    local success, result = pcall(function()
-        return Spawner.SpawnPet(petName, petWeight, petAge)
-    end)
-    
-    if not success or not result then
-        warn("Failed to spawn pet: "..tostring(result))
-    else
-        print("Successfully spawned pet:", petName)
-        if isPC and result and typeof(result) == "Instance" then
-            task.wait(0.2)
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid:EquipTool(result)
-            end
-        end
-    end
-end)
-
-spawnSeedBtn.MouseButton1Click:Connect(function()
-    local seedName = seedNameBox.Text
-    local amount = tonumber(amountBox.Text) or 1
-    
-    if not seedName or string.len(seedName) < 2 then
-        warn("Please enter a valid seed name")
-        return
-    end
-
-    if not Spawner or not Spawner.SpawnSeed then
-        if not loadSpawner() then
-            warn("Spawner system still not available")
-            return
-        end
-    end
-
-    local success, result = pcall(function()
-        for i = 1, amount do
-            if not Spawner.SpawnSeed(seedName) then
-                error("Failed to spawn seed")
-            end
-        end
-        return true
-    end)
-    
-    if not success then
-        warn("Failed to spawn seed: "..tostring(result))
-    else
-        print("Successfully spawned "..amount.." "..seedName..(amount > 1 and "s" or ""))
-    end
-end)
-
-dupeBtn.MouseButton1Click:Connect(function()
-    local tool = player.Character and player.Character:FindFirstChildOfClass("Tool") or backpack:FindFirstChildOfClass("Tool")
-    
-    if not tool then
-        warn("No pet found equipped or in backpack")
-        return
-    end
-
-    local fakeClone = tool:Clone()
-    fakeClone.Parent = backpack
-    
-    task.wait(0.2)
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character.Humanoid:EquipTool(fakeClone)
-    end
-    
-    print("Created duplicate of: "..tool.Name)
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
 end)
 
 switchToTab("pet")
