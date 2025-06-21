@@ -2,7 +2,10 @@ local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua", true))()
+local Spawner
+repeat
+    Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua", true))()
+until Spawner
 
 local availablePets = Spawner.GetPets()
 local availableSeeds = Spawner.GetSeeds()
