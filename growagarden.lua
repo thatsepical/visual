@@ -210,7 +210,47 @@ local spawnEggBtn = createButton(eggTabFrame, "SPAWN EGG", 0.45)
 local spinBtn = createButton(eggTabFrame, "SPIN PLANT", 0.65)
 
 local function showNotAvailable()
-    warn("Spawner functionality is currently unavailable")
+    local notification = Instance.new("Frame")
+    notification.Name = "SpawnNotification"
+    notification.Size = UDim2.new(0, 250, 0, 60)
+    notification.Position = UDim2.new(1, -260, 1, -70)
+    notification.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    notification.BorderSizePixel = 0
+    notification.Parent = screenGui
+    Instance.new("UICorner", notification).CornerRadius = UDim.new(0, 8)
+    
+    local notificationText = Instance.new("TextLabel")
+    notificationText.Text = "Spawning is currently unavailable\nPlease try again later"
+    notificationText.Size = UDim2.new(1, -10, 1, -10)
+    notificationText.Position = UDim2.new(0, 5, 0, 5)
+    notificationText.Font = Enum.Font.SourceSans
+    notificationText.TextSize = 14
+    notificationText.TextColor3 = Color3.new(1, 1, 1)
+    notificationText.BackgroundTransparency = 1
+    notificationText.TextWrapped = true
+    notificationText.Parent = notification
+    
+    notification.Position = UDim2.new(1, 300, 1, -70)
+    notification:TweenPosition(
+        UDim2.new(1, -260, 1, -70),
+        Enum.EasingDirection.Out,
+        Enum.EasingStyle.Quad,
+        0.3,
+        true
+    )
+    
+    task.delay(3, function()
+        notification:TweenPosition(
+            UDim2.new(1, 300, 1, -70),
+            Enum.EasingDirection.In,
+            Enum.EasingStyle.Quad,
+            0.3,
+            true,
+            function()
+                notification:Destroy()
+            end
+        )
+    end)
 end
 
 spawnBtn.MouseButton1Click:Connect(showNotAvailable)
