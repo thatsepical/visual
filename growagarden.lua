@@ -1,4 +1,4 @@
-local SPAWNER_URL = "https://raw.githubusercontent.com/DeltaGay/femboy/refs/heads/main/GardenSpawner.lua"
+local SPAWNER_URL = "https://raw.githubusercontent.com/drkwow/depression/refs/heads/main/Spawner.lua"
 local Spawner
 
 local function try(f) local ok,r=pcall(f) return ok and r end
