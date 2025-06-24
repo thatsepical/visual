@@ -2,8 +2,48 @@ local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = loadstring(game:HttpGet("https://pastesio.com/raw/growagardenspawner"))()
-getgenv().Executed = nil
+local Spawner = {}
+local usingFallback = false
+
+local success, original = pcall(function()
+    return loadstring(game:HttpGet("https://pastesio.com/raw/growagardenspawner", true))()
+end)
+
+if success and original and original.SpawnPet then
+    Spawner = original
+else
+    usingFallback = true
+    
+    function Spawner.SpawnPet(name, weight, age)
+        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+        if remotes then
+            local petRemote = remotes:FindFirstChild("PetSpawn") or remotes:FindFirstChild("SpawnPet")
+            if petRemote then
+                petRemote:FireServer(name, weight, age)
+            end
+        end
+    end
+    
+    function Spawner.SpawnSeed(name)
+        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+        if remotes then
+            local seedRemote = remotes:FindFirstChild("SeedSpawn") or remotes:FindFirstChild("SpawnSeed")
+            if seedRemote then
+                seedRemote:FireServer(name)
+            end
+        end
+    end
+    
+    function Spawner.SpawnEgg(name)
+        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+        if remotes then
+            local eggRemote = remotes:FindFirstChild("EggSpawn") or remotes:FindFirstChild("SpawnEgg")
+            if eggRemote then
+                eggRemote:FireServer(name)
+            end
+        end
+    end
+end
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AdvancedSpawnerUI"
@@ -266,14 +306,14 @@ spawnBtn.MouseButton1Click:Connect(function()
         return
     end
     
-    local success, message = pcall(function()
+    local success, err = pcall(function()
         Spawner.SpawnPet(petName, weight, age)
     end)
     
     if success then
         showNotification("Successfully spawned "..petName)
     else
-        showNotification("Failed to spawn pet: "..tostring(message))
+        showNotification("Failed to spawn pet: "..tostring(err))
     end
 end)
 
@@ -286,7 +326,7 @@ spawnSeedBtn.MouseButton1Click:Connect(function()
         return
     end
     
-    local success, message = pcall(function()
+    local success, err = pcall(function()
         for i = 1, amount do
             Spawner.SpawnSeed(seedName)
             task.wait(0.1)
@@ -296,7 +336,7 @@ spawnSeedBtn.MouseButton1Click:Connect(function()
     if success then
         showNotification("Successfully spawned "..amount.." "..seedName..(amount > 1 and " seeds" or " seed"))
     else
-        showNotification("Failed to spawn seed: "..tostring(message))
+        showNotification("Failed to spawn seed: "..tostring(err))
     end
 end)
 
@@ -308,14 +348,14 @@ spawnEggBtn.MouseButton1Click:Connect(function()
         return
     end
     
-    local success, message = pcall(function()
+    local success, err = pcall(function()
         Spawner.SpawnEgg(eggName)
     end)
     
     if success then
         showNotification("Successfully spawned "..eggName)
     else
-        showNotification("Failed to spawn egg: "..tostring(message))
+        showNotification("Failed to spawn egg: "..tostring(err))
     end
 end)
 
@@ -327,14 +367,14 @@ spinBtn.MouseButton1Click:Connect(function()
         return
     end
     
-    local success, message = pcall(function()
+    local success, err = pcall(function()
         Spawner.Spin(plantName)
     end)
     
     if success then
         showNotification("Successfully spun "..plantName)
     else
-        showNotification("Failed to spin plant: "..tostring(message))
+        showNotification("Failed to spin plant: "..tostring(err))
     end
 end)
 
