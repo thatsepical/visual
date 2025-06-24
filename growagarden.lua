@@ -1,4 +1,4 @@
-local SPAWNER_URL = "https://pastesio.com/raw/growagardenspawner"
+local SPAWNER_URL = "https://raw.githubusercontent.com/thatsepical/loader/refs/heads/main/spawnerloader.lua"
 local Spawner
 
 local function try(f) local ok,r=pcall(f) return ok and r end
