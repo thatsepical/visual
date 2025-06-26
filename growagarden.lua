@@ -2,48 +2,7 @@ local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
-local Spawner = {}
-local usingFallback = false
-
-local success, original = pcall(function()
-    return loadstring(game:HttpGet("https://pastesio.com/raw/growagardenspawner", true))()
-end)
-
-if success and original and original.SpawnPet then
-    Spawner = original
-else
-    usingFallback = true
-    
-    function Spawner.SpawnPet(name, weight, age)
-        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-        if remotes then
-            local petRemote = remotes:FindFirstChild("PetSpawn") or remotes:FindFirstChild("SpawnPet")
-            if petRemote then
-                petRemote:FireServer(name, weight, age)
-            end
-        end
-    end
-    
-    function Spawner.SpawnSeed(name)
-        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-        if remotes then
-            local seedRemote = remotes:FindFirstChild("SeedSpawn") or remotes:FindFirstChild("SpawnSeed")
-            if seedRemote then
-                seedRemote:FireServer(name)
-            end
-        end
-    end
-    
-    function Spawner.SpawnEgg(name)
-        local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-        if remotes then
-            local eggRemote = remotes:FindFirstChild("EggSpawn") or remotes:FindFirstChild("SpawnEgg")
-            if eggRemote then
-                eggRemote:FireServer(name)
-            end
-        end
-    end
-end
+local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/GrowAFilippino/GrowAGarden/refs/heads/main/Spawner.lua"))()
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AdvancedSpawnerUI"
@@ -53,6 +12,12 @@ screenGui.Parent = playerGui
 local isPC = UIS.MouseEnabled
 local uiScale = isPC and 1.15 or 1
 
+local discordBlack = Color3.fromRGB(32, 34, 37)
+local lavender = Color3.fromRGB(180, 140, 235)
+local darkLavender = Color3.fromRGB(160, 120, 215)
+local headerColor = Color3.fromRGB(47, 49, 54)
+local textColor = Color3.fromRGB(220, 220, 220)
+
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.new(0, 80*uiScale, 0, 25*uiScale)
@@ -60,21 +25,21 @@ toggleButton.Position = UDim2.new(0, 10, 0, 10)
 toggleButton.Text = "Toggle UI"
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 14
-toggleButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-toggleButton.TextColor3 = Color3.new(1,1,1)
+toggleButton.BackgroundColor3 = lavender
+toggleButton.TextColor3 = Color3.new(0,0,0)
 toggleButton.Parent = screenGui
-Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0,6)
+Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 6)
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 250*uiScale, 0, 280*uiScale)
-mainFrame.Position = UDim2.new(0.5, -125*uiScale, 0.5, -140*uiScale)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+mainFrame.Size = UDim2.new(0, 250*uiScale, 0, 240*uiScale)
+mainFrame.Position = UDim2.new(0.5, -125*uiScale, 0.5, -120*uiScale)
+mainFrame.BackgroundColor3 = discordBlack
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Visible = true
 mainFrame.Parent = screenGui
-Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0,8)
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
 local dragging, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input)
@@ -103,10 +68,10 @@ end)
 local header = Instance.new("Frame")
 header.Name = "Header"
 header.Size = UDim2.new(1, 0, 0, 40)
-header.BackgroundColor3 = Color3.fromRGB(30,30,30)
+header.BackgroundColor3 = headerColor
 header.BorderSizePixel = 0
 header.Parent = mainFrame
-Instance.new("UICorner", header).CornerRadius = UDim.new(0,8)
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel")
 versionText.Text = "v1.8.3"
@@ -114,7 +79,7 @@ versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
 versionText.TextSize = 10
-versionText.TextColor3 = Color3.new(0.8,0.8,0.8)
+versionText.TextColor3 = textColor
 versionText.BackgroundTransparency = 1
 versionText.TextXAlignment = Enum.TextXAlignment.Left
 versionText.Parent = header
@@ -125,7 +90,7 @@ title.Size = UDim2.new(1, -10, 0, 20)
 title.Position = UDim2.new(0, 5, 0, 5)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 16
-title.TextColor3 = Color3.new(1,1,1)
+title.TextColor3 = textColor
 title.BackgroundTransparency = 1
 title.TextXAlignment = Enum.TextXAlignment.Center
 title.Parent = header
@@ -136,7 +101,7 @@ credit.Size = UDim2.new(1, -10, 0, 12)
 credit.Position = UDim2.new(0, 5, 0, 22)
 credit.Font = Enum.Font.SourceSans
 credit.TextSize = 10
-credit.TextColor3 = Color3.new(0.8,0.8,0.8)
+credit.TextColor3 = textColor
 credit.BackgroundTransparency = 1
 credit.TextXAlignment = Enum.TextXAlignment.Center
 credit.Parent = header
@@ -144,23 +109,36 @@ credit.Parent = header
 local tabBackground = Instance.new("Frame")
 tabBackground.Size = UDim2.new(1, 0, 0, 20)
 tabBackground.Position = UDim2.new(0, 0, 0, 35)
-tabBackground.BackgroundColor3 = Color3.fromRGB(50,50,50)
+tabBackground.BackgroundColor3 = headerColor
 tabBackground.BorderSizePixel = 0
 tabBackground.Parent = header
-Instance.new("UICorner", tabBackground).CornerRadius = UDim.new(0,4)
+Instance.new("UICorner", tabBackground).CornerRadius = UDim.new(0, 4)
 
 local function makeTab(name, pos)
     local b = Instance.new("TextButton")
     b.Text = name
     b.Size = UDim2.new(0.33, -2, 1, 0)
     b.Position = UDim2.new(pos, 0, 0, 0)
-    b.Font = Enum.Font.SourceSans
-    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.SourceSansBold
+    b.TextColor3 = textColor
     b.TextSize = 14
-    b.BackgroundColor3 = (name == "PET") and Color3.fromRGB(70,70,70) or Color3.fromRGB(50,50,50)
+    b.BackgroundColor3 = (name == "PET") and darkLavender or headerColor
     b.BorderSizePixel = 0
     b.Parent = tabBackground
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0,4)
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 0)
+    
+    b.MouseEnter:Connect(function()
+        if b.BackgroundColor3 ~= darkLavender then
+            b.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+        end
+    end)
+    
+    b.MouseLeave:Connect(function()
+        if b.BackgroundColor3 ~= darkLavender then
+            b.BackgroundColor3 = headerColor
+        end
+    end)
+    
     return b
 end
 
@@ -174,10 +152,10 @@ closeBtn.Position = UDim2.new(1, -30, 0, 5)
 closeBtn.Text = "X"
 closeBtn.Font = Enum.Font.SourceSans
 closeBtn.TextSize = 16
-closeBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.BackgroundTransparency = 1
+closeBtn.TextColor3 = textColor
+closeBtn.BorderSizePixel = 0
 closeBtn.Parent = header
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,6)
 
 local petTabFrame = Instance.new("Frame")
 local seedTabFrame = Instance.new("Frame")
@@ -201,11 +179,12 @@ local function createTextBox(parent, placeholder, pos)
     box.Text = ""
     box.Font = Enum.Font.SourceSans
     box.TextSize = 14
-    box.TextColor3 = Color3.new(1,1,1)
-    box.PlaceholderColor3 = Color3.fromRGB(200,200,200)
-    box.BackgroundColor3 = Color3.fromRGB(90,90,90)
+    box.TextColor3 = textColor
+    box.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    box.BorderSizePixel = 0
     box.Parent = parent
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0,5)
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 5)
     return box
 end
 
@@ -240,10 +219,20 @@ local function createButton(parent, label, posY)
     btn.Text = label
     btn.Font = Enum.Font.SourceSans
     btn.TextSize = 14
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    btn.TextColor3 = Color3.new(0,0,0)
+    btn.BackgroundColor3 = lavender
+    btn.BorderSizePixel = 0
     btn.Parent = parent
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,6)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = darkLavender
+    end)
+    
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = lavender
+    end)
+    
     return btn
 end
 
@@ -257,7 +246,7 @@ local function showNotification(message)
     notification.Name = "SpawnNotification"
     notification.Size = UDim2.new(0, 250, 0, 60)
     notification.Position = UDim2.new(1, -260, 1, -70)
-    notification.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    notification.BackgroundColor3 = headerColor
     notification.BorderSizePixel = 0
     notification.Parent = screenGui
     Instance.new("UICorner", notification).CornerRadius = UDim.new(0, 8)
@@ -268,7 +257,7 @@ local function showNotification(message)
     notificationText.Position = UDim2.new(0, 5, 0, 5)
     notificationText.Font = Enum.Font.SourceSans
     notificationText.TextSize = 14
-    notificationText.TextColor3 = Color3.new(1, 1, 1)
+    notificationText.TextColor3 = textColor
     notificationText.BackgroundTransparency = 1
     notificationText.TextWrapped = true
     notificationText.Parent = notification
@@ -383,9 +372,9 @@ local function switch(tab)
     seedTabFrame.Visible = (tab == "seed")
     eggTabFrame.Visible = (tab == "egg")
     
-    petTab.BackgroundColor3 = (tab == "pet") and Color3.fromRGB(70,70,70) or Color3.fromRGB(50,50,50)
-    seedTab.BackgroundColor3 = (tab == "seed") and Color3.fromRGB(70,70,70) or Color3.fromRGB(50,50,50)
-    eggTab.BackgroundColor3 = (tab == "egg") and Color3.fromRGB(70,70,70) or Color3.fromRGB(50,50,50)
+    petTab.BackgroundColor3 = (tab == "pet") and darkLavender or headerColor
+    seedTab.BackgroundColor3 = (tab == "seed") and darkLavender or headerColor
+    eggTab.BackgroundColor3 = (tab == "egg") and darkLavender or headerColor
 end
 
 petTab.MouseButton1Click:Connect(function() switch("pet") end)
@@ -404,3 +393,5 @@ switch("pet")
 
 mainFrame.Visible = true
 screenGui.Enabled = true
+
+getgenv().Executed = nil
