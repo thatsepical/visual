@@ -14,7 +14,7 @@ local uiScale = isPC and 1.15 or 1
 
 local discordBlack = Color3.fromRGB(32, 34, 37)
 local lavender = Color3.fromRGB(217, 171, 56)
-local darkLavender = Color3.fromRGB(160, 120, 215)
+local darkLavender = Color3.fromRGB(197, 151, 36)
 local headerColor = Color3.fromRGB(47, 49, 54)
 local textColor = Color3.fromRGB(220, 220, 220)
 
@@ -74,7 +74,7 @@ header.Parent = mainFrame
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel")
-versionText.Text = "v2.0.1"
+versionText.Text = "v1.9.4"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
