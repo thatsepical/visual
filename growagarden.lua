@@ -1,8 +1,8 @@
+local Spawner = loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
-
-local Spawner = loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AdvancedSpawnerUI"
@@ -13,8 +13,8 @@ local isPC = UIS.MouseEnabled
 local uiScale = isPC and 1.15 or 1
 
 local discordBlack = Color3.fromRGB(32, 34, 37)
-local lavender = Color3.fromRGB(217, 171, 56)
-local darkLavender = Color3.fromRGB(197, 151, 36)
+local lavender = Color3.fromRGB(207, 83, 64)
+local darkLavender = Color3.fromRGB(207, 83, 64)
 local headerColor = Color3.fromRGB(47, 49, 54)
 local textColor = Color3.fromRGB(220, 220, 220)
 
@@ -32,8 +32,8 @@ Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 6)
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 250*uiScale, 0, 240*uiScale)
-mainFrame.Position = UDim2.new(0.5, -125*uiScale, 0.5, -120*uiScale)
+mainFrame.Size = UDim2.new(0, 280*uiScale, 0, 200*uiScale)
+mainFrame.Position = UDim2.new(0.5, -140*uiScale, 0.5, -100*uiScale)
 mainFrame.BackgroundColor3 = discordBlack
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -74,7 +74,7 @@ header.Parent = mainFrame
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel")
-versionText.Text = "v2.0.1"
+versionText.Text = "v2.1.1"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
@@ -189,12 +189,12 @@ local function createTextBox(parent, placeholder, pos)
 end
 
 local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.05, 0))
-local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.25, 0))
-local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.45, 0))
+local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.18, 0))
+local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.31, 0))
 local seedNameBox = createTextBox(seedTabFrame, "Seed Name", UDim2.new(0.05, 0, 0.05, 0))
-local amountBox = createTextBox(seedTabFrame, "Amount", UDim2.new(0.05, 0, 0.25, 0))
+local amountBox = createTextBox(seedTabFrame, "Amount", UDim2.new(0.05, 0, 0.18, 0))
 local eggNameBox = createTextBox(eggTabFrame, "Egg Name", UDim2.new(0.05, 0, 0.05, 0))
-local spinBox = createTextBox(eggTabFrame, "Plant to Spin", UDim2.new(0.05, 0, 0.25, 0))
+local spinBox = createTextBox(eggTabFrame, "Plant to Spin", UDim2.new(0.05, 0, 0.18, 0))
 
 local function validateDecimal(box)
     box:GetPropertyChangedSignal("Text"):Connect(function()
@@ -212,9 +212,9 @@ for _, b in ipairs({weightBox, ageBox, amountBox}) do
     validateDecimal(b) 
 end
 
-local function createButton(parent, label, posY)
+local function createButton(parent, label, posY, width)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 25)
+    btn.Size = UDim2.new(width or 0.9, 0, 0, 25)
     btn.Position = UDim2.new(0.05, 0, posY, 0)
     btn.Text = label
     btn.Font = Enum.Font.SourceSans
@@ -236,10 +236,62 @@ local function createButton(parent, label, posY)
     return btn
 end
 
-local spawnBtn = createButton(petTabFrame, "SPAWN PET", 0.65)
-local spawnSeedBtn = createButton(seedTabFrame, "SPAWN SEED", 0.45)
-local spawnEggBtn = createButton(eggTabFrame, "SPAWN EGG", 0.45)
-local spinBtn = createButton(eggTabFrame, "SPIN PLANT", 0.65)
+local function createLoadingBar(parent, buttonYPosition)
+    local loadingBarBg = Instance.new("Frame")
+    loadingBarBg.Name = "LoadingBarBg"
+    loadingBarBg.Size = UDim2.new(0.9, 0, 0, 20)
+    loadingBarBg.Position = UDim2.new(0.05, 0, buttonYPosition, 0)
+    loadingBarBg.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    loadingBarBg.BorderSizePixel = 0
+    loadingBarBg.Visible = false
+    loadingBarBg.Parent = parent
+
+    local loadingBar = Instance.new("Frame")
+    loadingBar.Name = "LoadingBar"
+    loadingBar.Size = UDim2.new(0, 0, 1, 0)
+    loadingBar.BackgroundColor3 = Color3.fromRGB(50, 205, 50)
+    loadingBar.BorderSizePixel = 0
+    loadingBar.Parent = loadingBarBg
+
+    local loadingPercent = Instance.new("TextLabel")
+    loadingPercent.Name = "LoadingPercent"
+    loadingPercent.Size = UDim2.new(1, 0, 1, 0)
+    loadingPercent.Font = Enum.Font.SourceSansBold
+    loadingPercent.TextSize = 12
+    loadingPercent.TextColor3 = Color3.new(1,1,1)
+    loadingPercent.BackgroundTransparency = 1
+    loadingPercent.Text = "0%"
+    loadingPercent.Parent = loadingBarBg
+
+    local loadingText = Instance.new("TextLabel")
+    loadingText.Name = "LoadingText"
+    loadingText.Size = UDim2.new(0.9, 0, 0, 40)
+    loadingText.Position = UDim2.new(0.05, 0, buttonYPosition + 0.18, 0)
+    loadingText.Font = Enum.Font.SourceSans
+    loadingText.TextSize = 12
+    loadingText.TextColor3 = textColor
+    loadingText.BackgroundTransparency = 1
+    loadingText.TextXAlignment = Enum.TextXAlignment.Left
+    loadingText.TextYAlignment = Enum.TextYAlignment.Top
+    loadingText.TextWrapped = true
+    loadingText.TextScaled = false
+    loadingText.AutomaticSize = Enum.AutomaticSize.Y
+    loadingText.Visible = false
+    loadingText.Parent = parent
+
+    return loadingText, loadingBarBg, loadingBar, loadingPercent
+end
+
+local petLoadingText, petLoadingBarBg, petLoadingBar, petLoadingPercent = createLoadingBar(petTabFrame, 0.60)
+local seedLoadingText, seedLoadingBarBg, seedLoadingBar, seedLoadingPercent = createLoadingBar(seedTabFrame, 0.40)
+local eggLoadingText, eggLoadingBarBg, eggLoadingBar, eggLoadingPercent = createLoadingBar(eggTabFrame, 0.40)
+
+local spawnBtn = createButton(petTabFrame, "SPAWN", 0.60, 0.44)
+local duplicateBtn = createButton(petTabFrame, "DUPE", 0.60, 0.44)
+duplicateBtn.Position = UDim2.new(0.51, 0, 0.60, 0)
+local spawnSeedBtn = createButton(seedTabFrame, "SPAWN SEED", 0.40)
+local spawnEggBtn = createButton(eggTabFrame, "SPAWN EGG", 0.40)
+local spinBtn = createButton(eggTabFrame, "SPIN PLANT", 0.60)
 
 local function showNotification(message)
     local notification = Instance.new("Frame")
@@ -285,86 +337,133 @@ local function showNotification(message)
     end)
 end
 
+local function startLoading(loadingText, loadingBarBg, loadingBar, loadingPercent, name, weight, age, category, isDuplicate)
+    if category == "PET" then
+        spawnBtn.Visible = false
+        duplicateBtn.Visible = false
+    elseif category == "SEED" then
+        spawnSeedBtn.Visible = false
+    elseif category == "EGG" then
+        spawnEggBtn.Visible = false
+    end
+    
+    loadingText.Visible = true
+    loadingBarBg.Visible = true
+    
+    local remainingTime = 3
+    loadingText.Text = "Spawning "..name..(isDuplicate and " (DUPLICATE)" or "").." ("..(weight or "0").." KG) ("..(age or "0").." Age) in "..remainingTime.." seconds"
+    
+    local startTime = tick()
+    local duration = remainingTime
+    
+    while tick() - startTime < duration do
+        local progress = (tick() - startTime) / duration
+        loadingBar.Size = UDim2.new(progress, 0, 1, 0)
+        loadingPercent.Text = math.floor(progress * 100).."%"
+        remainingTime = math.ceil(duration - (tick() - startTime))
+        loadingText.Text = "Spawning "..name..(isDuplicate and " (DUPLICATE)" or "").." ("..(weight or "0").." KG) ("..(age or "0").." Age) in "..remainingTime.." seconds"
+        task.wait()
+    end
+    
+    loadingText.Visible = false
+    loadingBarBg.Visible = false
+    loadingBar.Size = UDim2.new(0, 0, 1, 0)
+    
+    if category == "PET" then
+        spawnBtn.Visible = true
+        duplicateBtn.Visible = true
+    elseif category == "SEED" then
+        spawnSeedBtn.Visible = true
+    elseif category == "EGG" then
+        spawnEggBtn.Visible = true
+    end
+end
+
 spawnBtn.MouseButton1Click:Connect(function()
     local petName = petNameBox.Text
-    local weight = tonumber(weightBox.Text) or 1
-    local age = tonumber(ageBox.Text) or 1
-    
+    local weight = weightBox.Text
+    local age = ageBox.Text
     if petName == "" then
         showNotification("Please enter a pet name")
         return
     end
-    
-    local success, err = pcall(function()
-        Spawner.SpawnPet(petName, weight, age)
-    end)
-    
-    if success then
+    task.spawn(function()
+        startLoading(petLoadingText, petLoadingBarBg, petLoadingBar, petLoadingPercent, petName, weight, age, "PET", false)
+        Spawner.SpawnPet(petName, tonumber(weight), tonumber(age))
         showNotification("Successfully spawned "..petName)
-    else
-        showNotification("Failed to spawn pet: "..tostring(err))
+    end)
+end)
+
+duplicateBtn.MouseButton1Click:Connect(function()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local tool = nil
+    
+    for _, child in ipairs(character:GetChildren()) do
+        if child:IsA("Tool") then
+            tool = child
+            break
+        end
     end
+    
+    if not tool then
+        local backpack = player:FindFirstChild("Backpack")
+        if backpack then
+            for _, item in ipairs(backpack:GetChildren()) do
+                if item:IsA("Tool") then
+                    tool = item
+                    break
+                end
+            end
+        end
+    end
+    
+    if not tool then
+        showNotification("Please hold or have a pet in your backpack")
+        return
+    end
+    
+    task.spawn(function()
+        startLoading(petLoadingText, petLoadingBarBg, petLoadingBar, petLoadingPercent, tool.Name, nil, nil, "PET", true)
+        local clone = tool:Clone()
+        clone.Parent = player.Backpack
+        showNotification("Successfully duplicated "..tool.Name)
+    end)
 end)
 
 spawnSeedBtn.MouseButton1Click:Connect(function()
     local seedName = seedNameBox.Text
-    local amount = tonumber(amountBox.Text) or 1
-    
     if seedName == "" then
         showNotification("Please enter a seed name")
         return
     end
-    
-    local success, err = pcall(function()
-        for i = 1, amount do
-            Spawner.SpawnSeed(seedName)
-            task.wait(0.1)
-        end
+    task.spawn(function()
+        startLoading(seedLoadingText, seedLoadingBarBg, seedLoadingBar, seedLoadingPercent, seedName, nil, nil, "SEED", false)
+        Spawner.SpawnSeed(seedName)
+        showNotification("Successfully spawned "..seedName)
     end)
-    
-    if success then
-        showNotification("Successfully spawned "..amount.." "..seedName..(amount > 1 and " seeds" or " seed"))
-    else
-        showNotification("Failed to spawn seed: "..tostring(err))
-    end
 end)
 
 spawnEggBtn.MouseButton1Click:Connect(function()
     local eggName = eggNameBox.Text
-    
     if eggName == "" then
         showNotification("Please enter an egg name")
         return
     end
-    
-    local success, err = pcall(function()
+    task.spawn(function()
+        startLoading(eggLoadingText, eggLoadingBarBg, eggLoadingBar, eggLoadingPercent, eggName, nil, nil, "EGG", false)
         Spawner.SpawnEgg(eggName)
-    end)
-    
-    if success then
         showNotification("Successfully spawned "..eggName)
-    else
-        showNotification("Failed to spawn egg: "..tostring(err))
-    end
+    end)
 end)
 
 spinBtn.MouseButton1Click:Connect(function()
     local plantName = spinBox.Text
-    
     if plantName == "" then
         showNotification("Please enter a plant name")
         return
     end
-    
-    local success, err = pcall(function()
-        Spawner.Spin(plantName)
-    end)
-    
-    if success then
-        showNotification("Successfully spun "..plantName)
-    else
-        showNotification("Failed to spin plant: "..tostring(err))
-    end
+    Spawner.Spin(plantName)
+    showNotification("Spinning "..plantName)
 end)
 
 local function switch(tab)
@@ -393,5 +492,3 @@ switch("pet")
 
 mainFrame.Visible = true
 screenGui.Enabled = true
-
-getgenv().Executed = nil
