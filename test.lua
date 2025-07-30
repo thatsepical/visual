@@ -12,9 +12,9 @@ screenGui.Parent = playerGui
 local isPC = UIS.MouseEnabled
 local uiScale = isPC and 1.15 or 1
 
-local discordBlack = Color3.fromRGB(32, 34, 37)
-local lavender = Color3.fromRGB(0, 0, 0)
-local darkLavender = Color3.fromRGB(0, 0, 0)
+local discordBlack = Color3.fromRGB(33, 34, 38)
+local lavender = Color3.fromRGB(33, 34, 38)
+local darkLavender = Color3.fromRGB(33, 34, 38)
 local headerColor = Color3.fromRGB(47, 49, 54)
 local textColor = Color3.fromRGB(220, 220, 220)
 
@@ -219,7 +219,7 @@ local function createButton(parent, label, posY, width)
     btn.Text = label
     btn.Font = Enum.Font.SourceSans
     btn.TextSize = 14
-    btn.TextColor3 = Color3.new(0,0,0)
+    btn.TextColor3 = (label == "SPAWN" or label == "DUPE") and Color3.new(1,1,1) or Color3.new(0,0,0)
     btn.BackgroundColor3 = lavender
     btn.BorderSizePixel = 0
     btn.Parent = parent
