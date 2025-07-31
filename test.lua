@@ -27,6 +27,8 @@ toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 14
 toggleButton.BackgroundColor3 = discordBlack
 toggleButton.TextColor3 = Color3.new(1,1,1)
+toggleButton.BorderSizePixel = 1
+toggleButton.BorderColor3 = Color3.fromRGB(80, 80, 80)
 toggleButton.Parent = screenGui
 Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0, 6)
 
@@ -35,7 +37,8 @@ mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 280*uiScale, 0, 200*uiScale)
 mainFrame.Position = UDim2.new(0.5, -140*uiScale, 0.5, -100*uiScale)
 mainFrame.BackgroundColor3 = discordBlack
-mainFrame.BorderSizePixel = 0
+mainFrame.BorderSizePixel = 1
+mainFrame.BorderColor3 = Color3.fromRGB(80, 80, 80)
 mainFrame.Active = true
 mainFrame.Visible = true
 mainFrame.Parent = screenGui
@@ -69,7 +72,8 @@ local header = Instance.new("Frame")
 header.Name = "Header"
 header.Size = UDim2.new(1, 0, 0, 40)
 header.BackgroundColor3 = headerColor
-header.BorderSizePixel = 0
+header.BorderSizePixel = 1
+header.BorderColor3 = Color3.fromRGB(80, 80, 80)
 header.Parent = mainFrame
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
@@ -110,7 +114,8 @@ local tabBackground = Instance.new("Frame")
 tabBackground.Size = UDim2.new(1, 0, 0, 20)
 tabBackground.Position = UDim2.new(0, 0, 0, 35)
 tabBackground.BackgroundColor3 = headerColor
-tabBackground.BorderSizePixel = 0
+tabBackground.BorderSizePixel = 1
+tabBackground.BorderColor3 = Color3.fromRGB(80, 80, 80)
 tabBackground.Parent = header
 Instance.new("UICorner", tabBackground).CornerRadius = UDim.new(0, 4)
 
@@ -123,7 +128,8 @@ local function makeTab(name, pos)
     b.TextColor3 = textColor
     b.TextSize = 14
     b.BackgroundColor3 = (name == "PET") and darkLavender or headerColor
-    b.BorderSizePixel = 0
+    b.BorderSizePixel = 1
+    b.BorderColor3 = Color3.fromRGB(80, 80, 80)
     b.Parent = tabBackground
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 0)
     
@@ -182,7 +188,8 @@ local function createTextBox(parent, placeholder, pos)
     box.TextColor3 = textColor
     box.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
     box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    box.BorderSizePixel = 0
+    box.BorderSizePixel = 1
+    box.BorderColor3 = Color3.fromRGB(80, 80, 80)
     box.Parent = parent
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, 5)
     return box
@@ -219,9 +226,10 @@ local function createButton(parent, label, posY, width)
     btn.Text = label
     btn.Font = Enum.Font.SourceSans
     btn.TextSize = 14
-    btn.TextColor3 = (label == "SPAWN" or label == "DUPE") and Color3.new(1,1,1) or Color3.new(0,0,0)
+    btn.TextColor3 = Color3.new(1,1,1)
     btn.BackgroundColor3 = lavender
-    btn.BorderSizePixel = 0
+    btn.BorderSizePixel = 1
+    btn.BorderColor3 = Color3.fromRGB(80, 80, 80)
     btn.Parent = parent
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     
@@ -242,7 +250,8 @@ local function createLoadingBar(parent, buttonYPosition)
     loadingBarBg.Size = UDim2.new(0.9, 0, 0, 20)
     loadingBarBg.Position = UDim2.new(0.05, 0, buttonYPosition, 0)
     loadingBarBg.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    loadingBarBg.BorderSizePixel = 0
+    loadingBarBg.BorderSizePixel = 1
+    loadingBarBg.BorderColor3 = Color3.fromRGB(80, 80, 80)
     loadingBarBg.Visible = false
     loadingBarBg.Parent = parent
 
@@ -299,7 +308,8 @@ local function showNotification(message)
     notification.Size = UDim2.new(0, 250, 0, 60)
     notification.Position = UDim2.new(1, -260, 1, -70)
     notification.BackgroundColor3 = headerColor
-    notification.BorderSizePixel = 0
+    notification.BorderSizePixel = 1
+    notification.BorderColor3 = Color3.fromRGB(80, 80, 80)
     notification.Parent = screenGui
     Instance.new("UICorner", notification).CornerRadius = UDim.new(0, 8)
     
