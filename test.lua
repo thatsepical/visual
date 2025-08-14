@@ -78,7 +78,7 @@ header.Parent = mainFrame
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
 
 local versionText = Instance.new("TextLabel")
-versionText.Text = "v2.9.4"
+versionText.Text = "v3.0.0"
 versionText.Size = UDim2.new(0, 40, 0, 12)
 versionText.Position = UDim2.new(0, 5, 0, 5)
 versionText.Font = Enum.Font.SourceSans
@@ -100,7 +100,7 @@ title.TextXAlignment = Enum.TextXAlignment.Center
 title.Parent = header
 
 local credit = Instance.new("TextLabel")
-credit.Text = "by @zenxq"
+credit.Text = "by @zenxq | API by darkiedarkie"
 credit.Size = UDim2.new(1, -10, 0, 12)
 credit.Position = UDim2.new(0, 5, 0, 22)
 credit.Font = Enum.Font.SourceSans
@@ -177,30 +177,220 @@ end
 seedTabFrame.Visible = false
 eggTabFrame.Visible = false
 
-local function createTextBox(parent, placeholder, pos)
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0.9, 0, 0, 25)
-    box.Position = pos
-    box.PlaceholderText = placeholder
-    box.Text = ""
-    box.Font = Enum.Font.SourceSans
-    box.TextSize = 14
-    box.TextColor3 = textColor
-    box.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
-    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    box.BorderSizePixel = 1
-    box.BorderColor3 = Color3.fromRGB(80, 80, 80)
-    box.Parent = parent
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 5)
-    return box
+-- Dropdown for pets
+local petDropdown = Instance.new("Frame")
+petDropdown.Name = "PetDropdown"
+petDropdown.Size = UDim2.new(0.9, 0, 0, 25)
+petDropdown.Position = UDim2.new(0.05, 0, 0.05, 0)
+petDropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+petDropdown.BorderSizePixel = 1
+petDropdown.BorderColor3 = Color3.fromRGB(80, 80, 80)
+petDropdown.Parent = petTabFrame
+Instance.new("UICorner", petDropdown).CornerRadius = UDim.new(0, 5)
+
+local petDropdownButton = Instance.new("TextButton")
+petDropdownButton.Name = "DropdownButton"
+petDropdownButton.Size = UDim2.new(1, 0, 1, 0)
+petDropdownButton.Text = "Select Pet"
+petDropdownButton.Font = Enum.Font.SourceSans
+petDropdownButton.TextSize = 14
+petDropdownButton.TextColor3 = textColor
+petDropdownButton.BackgroundTransparency = 1
+petDropdownButton.Parent = petDropdown
+
+local petDropdownList = Instance.new("ScrollingFrame")
+petDropdownList.Name = "DropdownList"
+petDropdownList.Size = UDim2.new(1, 0, 0, 100)
+petDropdownList.Position = UDim2.new(0, 0, 1, 0)
+petDropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+petDropdownList.BorderSizePixel = 0
+petDropdownList.Visible = false
+petDropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+petDropdownList.ScrollBarThickness = 5
+petDropdownList.Parent = petDropdown
+
+local petDropdownLayout = Instance.new("UIListLayout")
+petDropdownLayout.Parent = petDropdownList
+
+-- Dropdown for seeds
+local seedDropdown = Instance.new("Frame")
+seedDropdown.Name = "SeedDropdown"
+seedDropdown.Size = UDim2.new(0.9, 0, 0, 25)
+seedDropdown.Position = UDim2.new(0.05, 0, 0.05, 0)
+seedDropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+seedDropdown.BorderSizePixel = 1
+seedDropdown.BorderColor3 = Color3.fromRGB(80, 80, 80)
+seedDropdown.Parent = seedTabFrame
+Instance.new("UICorner", seedDropdown).CornerRadius = UDim.new(0, 5)
+
+local seedDropdownButton = Instance.new("TextButton")
+seedDropdownButton.Name = "DropdownButton"
+seedDropdownButton.Size = UDim2.new(1, 0, 1, 0)
+seedDropdownButton.Text = "Select Seed"
+seedDropdownButton.Font = Enum.Font.SourceSans
+seedDropdownButton.TextSize = 14
+seedDropdownButton.TextColor3 = textColor
+seedDropdownButton.BackgroundTransparency = 1
+seedDropdownButton.Parent = seedDropdown
+
+local seedDropdownList = Instance.new("ScrollingFrame")
+seedDropdownList.Name = "DropdownList"
+seedDropdownList.Size = UDim2.new(1, 0, 0, 100)
+seedDropdownList.Position = UDim2.new(0, 0, 1, 0)
+seedDropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+seedDropdownList.BorderSizePixel = 0
+seedDropdownList.Visible = false
+seedDropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+seedDropdownList.ScrollBarThickness = 5
+seedDropdownList.Parent = seedDropdown
+
+local seedDropdownLayout = Instance.new("UIListLayout")
+seedDropdownLayout.Parent = seedDropdownList
+
+-- Dropdown for eggs
+local eggDropdown = Instance.new("Frame")
+eggDropdown.Name = "EggDropdown"
+eggDropdown.Size = UDim2.new(0.9, 0, 0, 25)
+eggDropdown.Position = UDim2.new(0.05, 0, 0.05, 0)
+eggDropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+eggDropdown.BorderSizePixel = 1
+eggDropdown.BorderColor3 = Color3.fromRGB(80, 80, 80)
+eggDropdown.Parent = eggTabFrame
+Instance.new("UICorner", eggDropdown).CornerRadius = UDim.new(0, 5)
+
+local eggDropdownButton = Instance.new("TextButton")
+eggDropdownButton.Name = "DropdownButton"
+eggDropdownButton.Size = UDim2.new(1, 0, 1, 0)
+eggDropdownButton.Text = "Select Egg"
+eggDropdownButton.Font = Enum.Font.SourceSans
+eggDropdownButton.TextSize = 14
+eggDropdownButton.TextColor3 = textColor
+eggDropdownButton.BackgroundTransparency = 1
+eggDropdownButton.Parent = eggDropdown
+
+local eggDropdownList = Instance.new("ScrollingFrame")
+eggDropdownList.Name = "DropdownList"
+eggDropdownList.Size = UDim2.new(1, 0, 0, 100)
+eggDropdownList.Position = UDim2.new(0, 0, 1, 0)
+eggDropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+eggDropdownList.BorderSizePixel = 0
+eggDropdownList.Visible = false
+eggDropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+eggDropdownList.ScrollBarThickness = 5
+eggDropdownList.Parent = eggDropdown
+
+local eggDropdownLayout = Instance.new("UIListLayout")
+eggDropdownLayout.Parent = eggDropdownList
+
+local function createDropdownOption(parent, text, callback)
+    local option = Instance.new("TextButton")
+    option.Text = text
+    option.Size = UDim2.new(1, 0, 0, 25)
+    option.Font = Enum.Font.SourceSans
+    option.TextSize = 14
+    option.TextColor3 = textColor
+    option.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    option.BorderSizePixel = 0
+    option.Parent = parent
+    
+    option.MouseEnter:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(70, 70, 75)
+    end)
+    
+    option.MouseLeave:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    end)
+    
+    option.MouseButton1Click:Connect(function()
+        callback(text)
+        parent.Parent.Visible = false
+    end)
+    
+    return option
 end
 
-local petNameBox = createTextBox(petTabFrame, "Pet Name", UDim2.new(0.05, 0, 0.05, 0))
+-- Populate dropdowns with available items
+local function populateDropdowns()
+    -- Pets
+    local pets = Spawner.GetPets()
+    for _, pet in ipairs(pets) do
+        createDropdownOption(petDropdownList, pet, function(selected)
+            petDropdownButton.Text = selected
+        end)
+    end
+    petDropdownList.CanvasSize = UDim2.new(0, 0, 0, #pets * 25)
+    
+    -- Seeds
+    local seeds = Spawner.GetSeeds()
+    for _, seed in ipairs(seeds) do
+        createDropdownOption(seedDropdownList, seed, function(selected)
+            seedDropdownButton.Text = selected
+        end)
+    end
+    seedDropdownList.CanvasSize = UDim2.new(0, 0, 0, #seeds * 25)
+    
+    -- Eggs
+    local eggs = Spawner.GetEggs()
+    for _, egg in ipairs(eggs) do
+        createDropdownOption(eggDropdownList, egg, function(selected)
+            eggDropdownButton.Text = selected
+        end)
+    end
+    eggDropdownList.CanvasSize = UDim2.new(0, 0, 0, #eggs * 25)
+end
+
+-- Toggle dropdown visibility
+petDropdownButton.MouseButton1Click:Connect(function()
+    petDropdownList.Visible = not petDropdownList.Visible
+    seedDropdownList.Visible = false
+    eggDropdownList.Visible = false
+end)
+
+seedDropdownButton.MouseButton1Click:Connect(function()
+    seedDropdownList.Visible = not seedDropdownList.Visible
+    petDropdownList.Visible = false
+    eggDropdownList.Visible = false
+end)
+
+eggDropdownButton.MouseButton1Click:Connect(function()
+    eggDropdownList.Visible = not eggDropdownList.Visible
+    petDropdownList.Visible = false
+    seedDropdownList.Visible = false
+end)
+
+-- Close dropdowns when clicking elsewhere
+UIS.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mousePos = input.Position
+        local petAbsPos = petDropdown.AbsolutePosition
+        local petAbsSize = petDropdown.AbsoluteSize
+        
+        if not (mousePos.X >= petAbsPos.X and mousePos.X <= petAbsPos.X + petAbsSize.X and
+               mousePos.Y >= petAbsPos.Y and mousePos.Y <= petAbsPos.Y + petAbsSize.Y + (petDropdownList.Visible and petDropdownList.AbsoluteSize.Y or 0)) then
+            petDropdownList.Visible = false
+        end
+        
+        local seedAbsPos = seedDropdown.AbsolutePosition
+        local seedAbsSize = seedDropdown.AbsoluteSize
+        
+        if not (mousePos.X >= seedAbsPos.X and mousePos.X <= seedAbsPos.X + seedAbsSize.X and
+               mousePos.Y >= seedAbsPos.Y and mousePos.Y <= seedAbsPos.Y + seedAbsSize.Y + (seedDropdownList.Visible and seedDropdownList.AbsoluteSize.Y or 0)) then
+            seedDropdownList.Visible = false
+        end
+        
+        local eggAbsPos = eggDropdown.AbsolutePosition
+        local eggAbsSize = eggDropdown.AbsoluteSize
+        
+        if not (mousePos.X >= eggAbsPos.X and mousePos.X <= eggAbsPos.X + eggAbsSize.X and
+               mousePos.Y >= eggAbsPos.Y and mousePos.Y <= eggAbsPos.Y + eggAbsSize.Y + (eggDropdownList.Visible and eggDropdownList.AbsoluteSize.Y or 0)) then
+            eggDropdownList.Visible = false
+        end
+    end
+end)
+
 local weightBox = createTextBox(petTabFrame, "Weight", UDim2.new(0.05, 0, 0.18, 0))
 local ageBox = createTextBox(petTabFrame, "Age", UDim2.new(0.05, 0, 0.31, 0))
-local seedNameBox = createTextBox(seedTabFrame, "Seed Name", UDim2.new(0.05, 0, 0.05, 0))
 local amountBox = createTextBox(seedTabFrame, "Amount", UDim2.new(0.05, 0, 0.18, 0))
-local eggNameBox = createTextBox(eggTabFrame, "Egg Name", UDim2.new(0.05, 0, 0.05, 0))
 local spinBox = createTextBox(eggTabFrame, "Plant to Spin", UDim2.new(0.05, 0, 0.18, 0))
 
 local function validateDecimal(box)
@@ -354,151 +544,3 @@ local function startLoading(loadingText, loadingBarBg, loadingBar, loadingPercen
     elseif category == "SEED" then
         spawnSeedBtn.Visible = false
     elseif category == "EGG" then
-        spawnEggBtn.Visible = false
-    end
-    
-    loadingText.Visible = true
-    loadingBarBg.Visible = true
-    
-    local remainingTime = 3
-    loadingText.Text = "Spawning "..name..(isDuplicate and " (DUPLICATE)" or "").." ("..(weight or "0").." KG) ("..(age or "0").." Age) in "..remainingTime.." seconds"
-    
-    local startTime = tick()
-    local duration = remainingTime
-    
-    while tick() - startTime < duration do
-        local progress = (tick() - startTime) / duration
-        loadingBar.Size = UDim2.new(progress, 0, 1, 0)
-        loadingPercent.Text = math.floor(progress * 100).."%"
-        remainingTime = math.ceil(duration - (tick() - startTime))
-        loadingText.Text = "Spawning "..name..(isDuplicate and " (DUPLICATE)" or "").." ("..(weight or "0").." KG) ("..(age or "0").." Age) in "..remainingTime.." seconds"
-        task.wait()
-    end
-    
-    loadingText.Visible = false
-    loadingBarBg.Visible = false
-    loadingBar.Size = UDim2.new(0, 0, 1, 0)
-    
-    if category == "PET" then
-        spawnBtn.Visible = true
-        duplicateBtn.Visible = true
-    elseif category == "SEED" then
-        spawnSeedBtn.Visible = true
-    elseif category == "EGG" then
-        spawnEggBtn.Visible = true
-    end
-end
-
-spawnBtn.MouseButton1Click:Connect(function()
-    local petName = petNameBox.Text
-    local weight = weightBox.Text
-    local age = ageBox.Text
-    if petName == "" then
-        showNotification("Please enter a pet name")
-        return
-    end
-    task.spawn(function()
-        startLoading(petLoadingText, petLoadingBarBg, petLoadingBar, petLoadingPercent, petName, weight, age, "PET", false)
-        Spawner.SpawnPet(petName, tonumber(weight), tonumber(age))
-        showNotification("Successfully spawned "..petName)
-    end)
-end)
-
-duplicateBtn.MouseButton1Click:Connect(function()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local tool = nil
-    
-    for _, child in ipairs(character:GetChildren()) do
-        if child:IsA("Tool") then
-            tool = child
-            break
-        end
-    end
-    
-    if not tool then
-        local backpack = player:FindFirstChild("Backpack")
-        if backpack then
-            for _, item in ipairs(backpack:GetChildren()) do
-                if item:IsA("Tool") then
-                    tool = item
-                    break
-                end
-            end
-        end
-    end
-    
-    if not tool then
-        showNotification("Please hold or have a pet in your backpack")
-        return
-    end
-    
-    task.spawn(function()
-        startLoading(petLoadingText, petLoadingBarBg, petLoadingBar, petLoadingPercent, tool.Name, nil, nil, "PET", true)
-        local clone = tool:Clone()
-        clone.Parent = player.Backpack
-        showNotification("Successfully duplicated "..tool.Name)
-    end)
-end)
-
-spawnSeedBtn.MouseButton1Click:Connect(function()
-    local seedName = seedNameBox.Text
-    if seedName == "" then
-        showNotification("Please enter a seed name")
-        return
-    end
-    task.spawn(function()
-        startLoading(seedLoadingText, seedLoadingBarBg, seedLoadingBar, seedLoadingPercent, seedName, nil, nil, "SEED", false)
-        Spawner.SpawnSeed(seedName)
-        showNotification("Successfully spawned "..seedName)
-    end)
-end)
-
-spawnEggBtn.MouseButton1Click:Connect(function()
-    local eggName = eggNameBox.Text
-    if eggName == "" then
-        showNotification("Please enter an egg name")
-        return
-    end
-    task.spawn(function()
-        startLoading(eggLoadingText, eggLoadingBarBg, eggLoadingBar, eggLoadingPercent, eggName, nil, nil, "EGG", false)
-        Spawner.SpawnEgg(eggName)
-        showNotification("Successfully spawned "..eggName)
-    end)
-end)
-
-spinBtn.MouseButton1Click:Connect(function()
-    local plantName = spinBox.Text
-    if plantName == "" then
-        showNotification("Please enter a plant name")
-        return
-    end
-    Spawner.Spin(plantName)
-    showNotification("Spinning "..plantName)
-end)
-
-local function switch(tab)
-    petTabFrame.Visible = (tab == "pet")
-    seedTabFrame.Visible = (tab == "seed")
-    eggTabFrame.Visible = (tab == "egg")
-    
-    petTab.BackgroundColor3 = (tab == "pet") and darkLavender or headerColor
-    seedTab.BackgroundColor3 = (tab == "seed") and darkLavender or headerColor
-    eggTab.BackgroundColor3 = (tab == "egg") and darkLavender or headerColor
-end
-
-petTab.MouseButton1Click:Connect(function() switch("pet") end)
-seedTab.MouseButton1Click:Connect(function() switch("seed") end)
-eggTab.MouseButton1Click:Connect(function() switch("egg") end)
-
-closeBtn.MouseButton1Click:Connect(function() 
-    mainFrame.Visible = false 
-end)
-
-toggleButton.MouseButton1Click:Connect(function() 
-    mainFrame.Visible = not mainFrame.Visible 
-end)
-
-switch("pet")
-
-mainFrame.Visible = true
-screenGui.Enabled = true
